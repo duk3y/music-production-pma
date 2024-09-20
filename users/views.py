@@ -5,4 +5,4 @@ from django.http import HttpResponse
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the users index.")
+    return HttpResponse("Welcome to the homepage!")
