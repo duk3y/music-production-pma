@@ -1,5 +1,8 @@
 # Music Review Application
 
+## Prerequisites
+- This app is compatible with Python 3.8 and 3.9. It is recommended to use one of those versions.
+
 ## Steps to building project
 1. Clone repo
 2. Create a new virtual enviroment by running `python -m venv ./venv` and then activating it.  For MacOS, this is `source ./venv/bin/activate`.  For Windows, it is `.\venv\Scripts\activate`. Pycharm also has its own built-in venv that you could use instead.
