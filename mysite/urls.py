@@ -19,8 +19,10 @@ from django.urls import include, path
 from .views import CustomLoginView, CommonDefaultView, PMAAdminDefaultView
 
 urlpatterns = [
-    path("", include("users.urls")),
     path("admin/", admin.site.urls),
+    path("accounts/", include("allauth.urls")),
+    path("",include("users.urls")),
+    path('google/', include('mysite.googleusers.urls')),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('common/', CommonDefaultView.as_view(), name='common_default'),
     path('pmaadmin/', PMAAdminDefaultView.as_view(), name='pma_admin_default'),
