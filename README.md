@@ -27,3 +27,4 @@
 1. In order for changes to be deployed to the heroku app from main, code changes must pass all tests in the workflow run. To see if your build passed navigate to "Actions" and click on the last workflow run to see if it suceeded/logs. It will then be deployed to Heroku where the application will be built - Devops has access to the logs for that process if you find that your changes are not being reflected in the heroku app.
 2. Many times issues occur when migrations are not fully ran, reference migrations above.
 3. Make sure to collect static files - not doing so can result in 404's and unexpected broken functionality, as static files won't be available in the Heroku app.
+4. Note if you install any additional dependencies run pip freeze > requirements.txt to ensure that the requirements.txt file is updated and others get the correct dependencies as well.
