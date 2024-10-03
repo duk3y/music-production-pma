@@ -33,8 +33,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'music-production-pm-app-da1846f20d32.herokuapp.co
 
 
 # Application definition
-
-SITE_ID = 2
+SITE_ID = 1
 
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
