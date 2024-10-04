@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'music-production-pm-app-da1846f20d32.herokuapp.co
 
 
 # Application definition
-SITE_ID = 1
+SITE_ID = os.getenv('SITE_ID')
 
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
@@ -71,7 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
+    # 'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
