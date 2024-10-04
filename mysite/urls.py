@@ -22,7 +22,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("",include("users.urls")),
-    path('google/', include('mysite.googleusers.urls')),
+    path('google/', include('mysite.googleusers.urls'), name='google_login'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('common/', CommonDefaultView.as_view(), name='common_default'),
     path('pmaadmin/', PMAAdminDefaultView.as_view(), name='pma_admin_default'),
