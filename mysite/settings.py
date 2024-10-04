@@ -178,7 +178,7 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
-LOGIN_REDIRECT_URL = '/accounts/profile/'
+LOGIN_REDIRECT_URL = 'common_default'
 #LOGIN_REDIRECT_URL = '/google/google-home/'
 LOGOUT_REDIRECT_URL = '/google/google-home/'
 
