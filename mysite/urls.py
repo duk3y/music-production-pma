@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from .views import CustomLoginView, CommonDefaultView, PMAAdminDefaultView
+
+
+from .views import CustomLoginView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -26,4 +28,5 @@ urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
     path('common/', CommonDefaultView.as_view(), name='common_default'),
     path('pmaadmin/', PMAAdminDefaultView.as_view(), name='pma_admin_default'),
+    path("login-post", AuthenticationView, name="authentication_view")
 ]

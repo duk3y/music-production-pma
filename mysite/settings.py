@@ -163,6 +163,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
+
 # SHERRIFF
 # Activate Django-Heroku.
 # Use this code to avoid the psycopg2 / django-heroku error!
@@ -178,8 +180,10 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 )
-LOGIN_REDIRECT_URL = 'common_default'
+
+LOGIN_REDIRECT_URL = 'authentication_view'
 #LOGIN_REDIRECT_URL = '/google/google-home/'
+# LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = '/google/google-home/'
 
 
