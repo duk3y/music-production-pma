@@ -1,17 +1,15 @@
+{% extends "base.html" %}
 
-<!DOCTYPE html> 
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Login{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style></style>
-</head>
-<body>
-    <h2>This is the default page for a PMA Administrator after login.</h2>
-</body>
-</html>
+{% block title %}PMA Admin Default Page{% endblock %}
 
-<!--NOTE: I think it'll be a good idea to have a base.html file for default headers and everything and have these templates 
-extend from it. -->
+{% block content %}
+<div class="manage-files-container">
+    <div class="welcome"><h2>Welcome, NAME (Admin)</h2></div>
+    <div class="search-bar">
+        searchbar
+    </div>
+    <div class="list">
+        list
+    </div>
+</div>
+{% endblock %}
