@@ -54,6 +54,9 @@
         .login-box button {
             margin: 10px 0;
         }
+        .auth-button-container {
+            margin-left: auto;
+        }
         main {
             flex: 1; /* main takes up remaining space */
         }
@@ -62,9 +65,19 @@
 <body>
     <header>
         <nav>
-            <img src="{% static 'logo.png' %}" alt="Logo">
-            <span>Music Manager</span>
-            <!-- links for navbar can go here! -->
+            <div>
+                <img src="{% static 'logo.png' %}" alt="Logo">
+                <span>Music Manager</span>
+            </div>
+            <div class="auth-button-container">
+                {% block auth_button %}
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="btn btn-light">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-light">Login</a>
+                {% endif %}
+                {% endblock %}
+            </div>
         </nav>
     </header>
     <main class="login-container">
