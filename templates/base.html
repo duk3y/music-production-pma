@@ -38,6 +38,7 @@
         nav a {
             margin: 0 15px;
             color: #ffffff;
+            text-decoration: none; 
         }
         .login-container {
             display: flex;
@@ -68,8 +69,10 @@
     <header>
         <nav>
             <div>
-                <img src="{% static 'logo.png' %}" alt="Logo">
-                <span>Music Manager</span>
+                <a href="{% url 'home' %}">
+                    <img src="{% static 'logo.png' %}" alt="Logo">
+                    <span>Music Manager</span>
+                </a>
             </div>
             <div class="auth-button-container">
                 {% block auth_button %}
