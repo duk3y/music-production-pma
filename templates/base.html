@@ -44,6 +44,8 @@
             justify-content: center;
             align-items: center;
             flex: 1; /* takes up remaining space */
+            height: 100%;
+            padding-bottom: 50px;
         }
         .login-box {
             background-color: black;
@@ -80,12 +82,9 @@
             </div>
         </nav>
     </header>
-    <main class="login-container">
-        <div class="login-box">
-            <h2>Login</h2>
-            <p>Collaborate, Create, and Capture Your Sound</p>
-            <a href="{% url 'google_login'%}" class="btn btn-light"><i class="fab fa-google"></i> Sign in with Google</a>
-        </div>
+    <main>
+        {% block content %}
+        {% endblock %}
     </main>
     <footer>
         <p style="color: rgb(65, 65, 65); font-size: 12px;">This system is a class project for CS 3240, the system is not monitored, and no real information shall be inputed into the application.</p>
