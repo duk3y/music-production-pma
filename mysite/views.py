@@ -4,20 +4,27 @@ from django.urls import reverse
 from django.views import View
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from users.models import Profile
-
+from users.models import Profile, Project
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
 
-class CommonDefaultView(View):
+class CommonDefaultView(LoginRequiredMixin, View):
     template_name = 'commondefault.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        user = request.user
+        projects = Project.objects.filter(user=user)  # Fetch projects for the logged-in user
+        context = {
+            'projects': projects,
+            'username': user.username  # Pass the username to the template
+        }
+        print("Rendering commondefault.html with", len(projects), "projects")
+        return render(request, self.template_name, context)
 
-class PMAAdminDefaultView(View):
+class PMAAdminDefaultView(LoginRequiredMixin, View):
     template_name = 'pmaadmindefault.html'
 
     def get(self, request):
