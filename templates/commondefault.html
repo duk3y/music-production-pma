@@ -151,9 +151,9 @@
         </div>
 
         <div class="button-container">
-            <button class="btn btn-light">Create a Project</button>
-            <button class="btn btn-light">Join a Project</button>
-        </div>
+            <a href="{% url 'create_project' %}" class="btn btn-light">Create a Project</a>
+            <a href="{% url 'join_project' %}" class="btn btn-light">Join a Project</a>  <!-- Updated link -->
+        </div>        
     </main>
 
     <footer>

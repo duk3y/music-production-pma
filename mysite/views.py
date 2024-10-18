@@ -5,26 +5,30 @@ from django.views import View
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from users.models import Profile, Project
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
 
-class CommonDefaultView(LoginRequiredMixin, View):
+class CommonDefaultView(View):
     template_name = 'commondefault.html'
 
     def get(self, request):
         user = request.user
-        projects = Project.objects.filter(user=user)  # Fetch projects for the logged-in user
+        owned_projects = Project.objects.filter(user=user)
+        collaborating_projects = Project.objects.filter(collaborators=user)
+
+        # combine owned and collaborating projects
+        projects = owned_projects | collaborating_projects
+
         context = {
-            'projects': projects,
-            'username': user.username  # Pass the username to the template
+            'projects': projects.distinct(),
+            'username': user.username
         }
         print("Rendering commondefault.html with", len(projects), "projects")
         return render(request, self.template_name, context)
 
-class PMAAdminDefaultView(LoginRequiredMixin, View):
+class PMAAdminDefaultView(View):
     template_name = 'pmaadmindefault.html'
 
     def get(self, request):
@@ -43,3 +47,4 @@ def AuthenticationView(request):
     else:
         print("no")
         return redirect(reverse("common_default"))
+
