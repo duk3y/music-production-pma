@@ -83,8 +83,8 @@
             width: 50%;
         }
         .project-list {
-            height: 400px; /* Fixed large height for the table */
-            overflow-y: auto; /* Scroll if there are many projects */
+            height: 400px; 
+            overflow-y: auto; 
         }
         .button-container {
             margin-top: 30px;
@@ -98,27 +98,23 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
     <header>
         <div>
             <img src="{% static 'logo.png' %}" alt="Logo">
             <span>Music Manager</span>
         </div>
-        <div class="username">{{ username }}</div> <!-- Display the username -->
+        <div class="username">{{ username }}</div> 
     </header>
 
-    <!-- Main Content -->
     <main class="container">
         <h1 class="text-center">My Projects</h1>
 
-        <!-- Search bar (spans half of the screen) -->
         <div class="search-container">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" placeholder="Search" aria-label="Search">
             </div>
         </div>
 
-        <!-- Project Table (fixed size) -->
         <div class="project-list">
             <table class="table table-dark table-hover">
                 <thead>
@@ -144,7 +140,6 @@
             </table>
         </div>
 
-        <!-- Pagination -->
         <div class="d-flex justify-content-center">
             <ul class="pagination">
                 <li class="page-item"><a class="page-link" href="#">1</a></li>
@@ -155,14 +150,12 @@
             </ul>
         </div>
 
-        <!-- Create and Join Buttons (shifted down and made larger) -->
         <div class="button-container">
             <button class="btn btn-light">Create a Project</button>
             <button class="btn btn-light">Join a Project</button>
         </div>
     </main>
 
-    <!-- Footer -->
     <footer>
         <p>Created by: Computing ids</p>
         <p>&copy; CS 3240</p>
