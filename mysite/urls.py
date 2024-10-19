@@ -18,9 +18,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 from . import views
-from .views import CustomLoginView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView
+from .views import CustomLoginView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView, upload_file
 
 urlpatterns = [
+    path('upload/', upload_file, name='file_upload'),  
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path('', views.home, name='home'),

@@ -6,7 +6,8 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from users.models import Profile
 
-
+def upload_file(request):
+    return render(request, 'upload.html')
 
 def home(request):
     return render(request, 'home.html')
