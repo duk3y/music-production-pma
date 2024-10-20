@@ -8,6 +8,9 @@ from users.models import Profile
 
 
 
+def home(request):
+    return render(request, 'home.html')
+
 class CustomLoginView(LoginView):
     template_name = 'login.html'
 
