@@ -4,6 +4,12 @@ from django.urls import reverse
 from django.views import View
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+
+from users.models import Profile
+
+def upload_file(request):
+    return render(request, 'upload.html')
+  
 from users.models import Profile, Project
 
 
