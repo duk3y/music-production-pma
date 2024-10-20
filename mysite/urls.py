@@ -17,13 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-
+from . import views
 from .views import CustomLoginView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
-    path("",include("users.urls")),
+    path('', views.home, name='home'),
     path('google/', include('mysite.googleusers.urls'), name='google_login'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('common/', CommonDefaultView.as_view(), name='common_default'),
