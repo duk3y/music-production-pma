@@ -7,13 +7,17 @@
         <p>Organize and manage your music projects by uploading files below.</p>
 
         <!-- File Upload Form -->
-        <div class="form-group">
-            <label for="fileUpload" style="color: white;">Select File</label>
-            <input type="file" name="fileUpload" id="fileUpload" class="form-control" required>
-        </div>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_file" style="color: white;">Select File</label>
+                {{form.file}}
+            </div>
+            <button type="submit" class="btn btn-primary" style="background-color: #1DB954; border: none; width: 100%; padding: 10px;">Upload</button>
+        </form>
         <br>
         <br>
-        <button type="submit" class="btn btn-primary" style="background-color: #1DB954; border: none; width: 100%; padding: 10px;">Upload</button>
+
     </div>
 </div>
 {% endblock %}
