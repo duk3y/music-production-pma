@@ -96,15 +96,18 @@
 
         <div class="tab-content mt-3">
             <div class="tab-pane fade show active" id="video-files">
-                {% include 'filepreviews/showvideofiles.html' %}
+                <h3>Video Files</h3>
             </div>
             <div class="tab-pane fade" id="image-files">
-                {% include 'filepreviews/showimagefiles.html' %}
+                <h3>Image Files</h3>
             </div>
             <div class="tab-pane fade" id="text-files">
-                {% include 'filepreviews/showtextfiles.html' %}
+                <h3>Text Files</h3>
             </div>
         </div>
+
+        
+        {% include 'showprojectfiles.html' %}
 
         <div class="d-flex justify-content-center">
             <ul class="pagination">

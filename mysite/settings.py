@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'users',
     'storages'
+    'users',
+    'storages'
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -158,20 +160,18 @@ if os.getenv('ENV') == 'production':
     AWS_S3_REGION_NAME = 'us-east-1'
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
+    AWS_S3_URL_PROTOCOL = 'https'
     AWS_S3_USE_SSL = True
     AWS_S3_VERIFY = True
 
-    AWS_LOCATION = 'static'
-    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{AWS_LOCATION}/'
+    STATIC_URL = f'{AWS_S3_URL_PROTOCOL}://{AWS_S3_CUSTOM_DOMAIN}/static/'
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/uploads/'
-
+    MEDIA_URL = f'{AWS_S3_URL_PROTOCOL}://{AWS_S3_CUSTOM_DOMAIN}/media/'
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
+    AWS_DEFAULT_ACL = None
     AWS_S3_FILE_OVERWRITE = False
-    WHITENOISE_USE_STATIC = False
-    MIDDLEWARE.remove('whitenoise.middleware.WhiteNoiseMiddleware')
 
 else:
     MEDIA_ROOT = BASE_DIR / "uploads/"
@@ -184,7 +184,6 @@ else:
     STATIC_ROOT = BASE_DIR / "staticfiles"
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-    
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
