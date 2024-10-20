@@ -29,5 +29,6 @@ urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
     path('common/', CommonDefaultView.as_view(), name='common_default'),
     path('pmaadmin/', PMAAdminDefaultView.as_view(), name='pma_admin_default'),
-    path("login-post", AuthenticationView, name="authentication_view")
+    path("login-post", AuthenticationView, name="authentication_view"),
+    path('', include('users.urls')),  
 ]
