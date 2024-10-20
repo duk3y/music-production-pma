@@ -4,14 +4,30 @@ from django.urls import reverse
 from django.views import View
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from users.models import Profile, Project, ProjectFiles
+from .forms import UploadFileForm
 
-from users.models import Profile
+@login_required()
+def upload_file(request, project_id):
+    project = Project.objects.get(id=project_id)
 
-def upload_file(request):
-    return render(request, 'upload.html')
-  
-from users.models import Profile, Project
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            projectfile = form.save(commit=False)
+            projectfile.project = project
+            projectfile.uploaded_by = request.user
+            projectfile.save()
+    else:
+        form = UploadFileForm()
+    return render(request, "upload.html", {"form":form})
 
+@login_required()
+def view_files(request, project_id):
+    project = Project.objects.get(id=project_id)
+    files = ProjectFiles.objects.filter(project=project)
+
+    return render(request, 'showprojectfiles.html',{"files": files})
 
 def home(request):
     return render(request, 'home.html')
@@ -56,4 +72,9 @@ def AuthenticationView(request):
     else:
         print("no")
         return redirect(reverse("common_default"))
+
+@login_required()
+def ProjectDetailView(request, project_id):
+    project = Project.objects.get(id=project_id)
+    return render(request, 'project_info.html', {'project':project})
 

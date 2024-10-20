@@ -1,0 +1,14 @@
+<div>
+    {% if files %}
+    <h1>Uploaded Files</h1>
+        <div>
+            {% for file in files %}
+            <ul>
+                <li> 
+                    <img src="{{file.file.url}}">
+                </li>   
+            </ul>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
