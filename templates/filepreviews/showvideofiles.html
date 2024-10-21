@@ -1,0 +1,17 @@
+<div>
+    <h3>Video Files</h3>
+    {% if video_files %}
+        <ul>
+            {% for file in video_files %}
+                <li>
+                    <video width="320" height="240" controls>
+                        <source src="{{ file.file.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No video files uploaded.</p>
+    {% endif %}
+</div>

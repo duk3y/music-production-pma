@@ -1,0 +1,14 @@
+<div>
+    <h3>Image Files</h3>
+    {% if image_files %}
+        <ul>
+            {% for file in image_files %}
+                <li>
+                    <img src="{{ file.file.url }}" alt="Image file" width="320" height="240">
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No image files uploaded.</p>
+    {% endif %}
+</div>
