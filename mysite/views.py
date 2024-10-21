@@ -22,12 +22,6 @@ def upload_file(request, project_id):
         form = UploadFileForm()
     return render(request, "upload.html", {"form":form})
 
-@login_required()
-def view_files(request, project_id):
-    project = Project.objects.get(id=project_id)
-    files = ProjectFiles.objects.filter(project=project)
-
-    return render(request, 'showprojectfiles.html',{"files": files})
 
 def home(request):
     return render(request, 'home.html')
@@ -76,5 +70,17 @@ def AuthenticationView(request):
 @login_required()
 def ProjectDetailView(request, project_id):
     project = Project.objects.get(id=project_id)
-    return render(request, 'project_info.html', {'project':project})
+    files = ProjectFiles.objects.filter(project=project)
+
+    # video_files = files.filter(file__iendswith=('.mp4', '.mov', '.avi'))
+    video_files = files.filter(file__icontains='.mp4') | files.filter(file__icontains='.mov') | files.filter(file__icontains='.avi')
+    image_files = files.filter(file__icontains='.jpg') | files.filter(file__icontains='.jpeg') | files.filter(file__icontains='.png') | files.filter(file__icontains='.gif')
+    text_files = files.filter(file__icontains='.txt') | files.filter(file__icontains='.pdf') | files.filter(file__icontains='.docx')
+
+    return render(request, 'project_info.html', {
+        'project': project,
+        'video_files': video_files,
+        'image_files': image_files,
+        'text_files': text_files,
+    })
 
