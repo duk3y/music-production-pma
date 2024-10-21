@@ -158,8 +158,8 @@ if os.getenv('ENV') == 'production':
     AWS_S3_USE_SSL = True
     AWS_S3_VERIFY = True
 
-
-    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
+    STATIC_LOCATION = 'static'
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
     STATIC_ROOT = BASE_DIR / "staticfiles"
     STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
