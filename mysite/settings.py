@@ -54,8 +54,6 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'users',
     'storages'
-    'users',
-    'storages'
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
