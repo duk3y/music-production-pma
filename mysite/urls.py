@@ -33,3 +33,8 @@ urlpatterns = [
     path('projects/<int:project_id>', ProjectDetailView, name="project_info" ),
     path('', include('users.urls')),  
 ]
+"""# uncomment these lines if you want to test during development, not needed during production (heroku)
+from django.conf import settings
+from django.conf.urls.static import static
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)"""
