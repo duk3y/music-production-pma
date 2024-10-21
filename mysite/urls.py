@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from . import views
-from .views import CustomLoginView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView, upload_file, ProjectDetailView
+from .views import CustomLoginView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView, upload_file, ProjectDetailView, login_redirect
 
 urlpatterns = [
     path('projects/<int:project_id>/upload/', upload_file, name='file_upload'),  
@@ -32,6 +32,7 @@ urlpatterns = [
     path("login-post", AuthenticationView, name="authentication_view"),
     path('projects/<int:project_id>', ProjectDetailView, name="project_info" ),
     path('', include('users.urls')),  
+    path('login-redirect/', login_redirect, name='login_redirect'),
 ]
 """# uncomment these lines if you want to test during development, not needed during production (heroku)
 from django.conf import settings

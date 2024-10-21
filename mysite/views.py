@@ -84,3 +84,12 @@ def ProjectDetailView(request, project_id):
         'text_files': text_files,
     })
 
+def login_redirect(request):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+
+    if profile.pmaStatus:
+        return redirect('pma_admin_default')
+    else:
+        return redirect('common_default')
+

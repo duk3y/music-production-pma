@@ -208,7 +208,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 LOGIN_URL = '/accounts/google/login/'
-#LOGIN_REDIRECT_URL = '/google/google-home/'
+LOGIN_REDIRECT_URL = 'login_redirect'
 # LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = '/google/google-home/'
 
