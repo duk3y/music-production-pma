@@ -73,6 +73,7 @@ class CommonDefaultViewTestCase(TestCase):
         self.collaborating_project = Project.objects.create(name="Collaborating Project", user=collaborator)
         self.collaborating_project.collaborators.add(self.user)  # Add testuser as a collaborator
 
+    @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
     def test_own_and_collaborating_projects(self):
         # Log in the user
         self.client.login(username='testuser', password='password')
