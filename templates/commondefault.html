@@ -1,3 +1,4 @@
+{% extends 'base.html' %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -6,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Projects</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% block content %}
     <style>
         body {
             background-color: #1c1c1c;
@@ -15,38 +17,12 @@
             display: flex;
             flex-direction: column;
         }
-        header {
-            background-color: black;
-            padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header img {
-            height: 40px;
-        }
-        header span {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        header .username {
-            border: 1px solid #fff;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
         main {
             flex-grow: 1;
             padding: 20px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-        }
-        footer {
-            background-color: black;
-            padding: 10px 0;
-            text-align: center;
-            color: rgb(65, 65, 65);
-            font-size: 14px;
         }
         table th, table td {
             color: #fff;
@@ -71,15 +47,13 @@
         .input-group input {
             height: 45px;
         }
-        .btn {
-            padding: 15px 40px;
-            font-size: 1.2rem;
-        }
         .search-container {
             display: flex;
             justify-content: flex-start;
         }
         .search-container .input-group {
+            margin-top: 30px;
+            margin-top: 15px;
             width: 50%;
         }
         .project-list {
@@ -98,13 +72,6 @@
     </style>
 </head>
 <body>
-    <header>
-        <div>
-            <img src="{% static 'logo.png' %}" alt="Logo">
-            <span>Music Manager</span>
-        </div>
-        <div class="username">{{ username }}</div> 
-    </header>
 
     <main class="container">
         <h1 class="text-center">My Projects</h1>
@@ -155,12 +122,8 @@
         <div class="button-container">
             <a href="{% url 'create_project' %}" class="btn btn-light">Create a Project</a>
             <a href="{% url 'join_project' %}" class="btn btn-light">Join a Project</a>  <!-- Updated link -->
-        </div>        
+        </div>     
     </main>
-
-    <footer>
-        <p>Created by: Computing ids</p>
-        <p>&copy; CS 3240</p>
-    </footer>
+    {% endblock %}   
 </body>
 </html>
