@@ -16,6 +16,16 @@ class ProjectFiles(models.Model):
     file = models.FileField(upload_to='uploads/')
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    audio_file = models.FileField(upload_to='uploads/')
 
     def __str__(self):
         return f"{self.file.name} ({self.project.name})"
+
+class Comment(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='comments')
+    timestamp = models.FloatField()  # Stores the timestamp in seconds
+    text = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  # Optional: user who added the comment
+
+    def __str__(self):
+        return f"{self.project.name} - {self.timestamp}s: {self.text[:20]}"
