@@ -76,12 +76,14 @@ def ProjectDetailView(request, project_id):
     video_files = files.filter(file__icontains='.mp4') | files.filter(file__icontains='.mov') | files.filter(file__icontains='.avi')
     image_files = files.filter(file__icontains='.jpg') | files.filter(file__icontains='.jpeg') | files.filter(file__icontains='.png') | files.filter(file__icontains='.gif')
     text_files = files.filter(file__icontains='.txt') | files.filter(file__icontains='.pdf') | files.filter(file__icontains='.docx')
+    audio_files = files.filter(file__icontains='.mp3') | files.filter(file__icontains='.wav') | files.filter(file__icontains='.aac')
 
     return render(request, 'project_info.html', {
         'project': project,
         'video_files': video_files,
         'image_files': image_files,
         'text_files': text_files,
+        'audio_files' : audio_files,
     })
 
 def login_redirect(request):
