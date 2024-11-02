@@ -1,0 +1,17 @@
+<div>
+    <h3>Audio Files</h3>
+    {% if audio_files %}
+        <ul>
+            {% for file in audio_files %}
+                <li>
+                    <audio controls>
+                        <source src="{{ file.file.url }}" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No audio files uploaded.</p>
+    {% endif %}
+</div>
