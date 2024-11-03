@@ -103,3 +103,4 @@ def edit_metadata(request, file_id):
             return redirect('project_info', project_id=file_instance.project.id)
     else:
         form = UploadFileForm(instance=file_instance)
+    return render(request, 'edit_metadata.html', {'form': form, 'file_instance': file_instance})
