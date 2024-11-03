@@ -4,7 +4,7 @@
 - Create a new branch, open a pull request and add Sagar, the testing manager to the PR to approve your PR before merging. He will check that your PR is sufficiently tested. 
 
 ## Prerequisites
-- This app is compatible with Python 3.8 and 3.9. It is recommended to use one of those versions.
+- This app is compatible with Python 3.9. It is recommended to use one of those versions.
 
 ## Steps to building project
 1. Clone repo

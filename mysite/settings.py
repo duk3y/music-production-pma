@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'users',
-    'storages'
+    'storages',
+    'mysite',
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -174,8 +175,8 @@ if os.getenv('ENV') == 'production':
     MIDDLEWARE.remove('whitenoise.middleware.WhiteNoiseMiddleware')
 
 else:
-    MEDIA_ROOT = BASE_DIR / "uploads/"
-    MEDIA_URL = "media/"
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+    MEDIA_URL = "/media/"
 
     # Static files (CSS, JavaScript, Images)
     # https://docs.djangoproject.com/en/5.1/howto/static-files/
