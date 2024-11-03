@@ -5,6 +5,7 @@ from django.views import View
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from users.models import Profile, Project, ProjectFiles
+from users.forms import ProjectForm 
 from .forms import UploadFileForm
 
 
@@ -19,9 +20,10 @@ def upload_file(request, project_id):
             projectfile.project = project
             projectfile.uploaded_by = request.user
             projectfile.save()
+            return redirect('project_info', project_id=project.id) 
     else:
         form = UploadFileForm()
-    return render(request, "upload.html", {"form":form})
+    return render(request, "upload.html", {"form": form, "project": project})
 
 
 def home(request):
@@ -74,10 +76,10 @@ def ProjectDetailView(request, project_id):
     files = ProjectFiles.objects.filter(project=project)
 
     # video_files = files.filter(file__iendswith=('.mp4', '.mov', '.avi'))
-    video_files = files.filter(file__icontains='.mp4') | files.filter(file__icontains='.mov') | files.filter(file__icontains='.avi')
-    image_files = files.filter(file__icontains='.jpg') | files.filter(file__icontains='.jpeg') | files.filter(file__icontains='.png') | files.filter(file__icontains='.gif')
-    text_files = files.filter(file__icontains='.txt') | files.filter(file__icontains='.pdf') | files.filter(file__icontains='.docx')
-    audio_files = files.filter(file__icontains='.mp3') | files.filter(file__icontains='.wav') | files.filter(file__icontains='.aac')
+    video_files = (files.filter(file__icontains='.mp4') | files.filter(file__icontains='.mov') | files.filter(file__icontains='.avi')).distinct()
+    image_files = (files.filter(file__icontains='.jpg') | files.filter(file__icontains='.jpeg') | files.filter(file__icontains='.png') | files.filter(file__icontains='.gif')).distinct()
+    text_files = (files.filter(file__icontains='.txt') | files.filter(file__icontains='.pdf') | files.filter(file__icontains='.docx')).distinct()
+    audio_files = (files.filter(file__icontains='.mp3') | files.filter(file__icontains='.wav') | files.filter(file__icontains='.aac')).distinct()
 
     return render(request, 'project_info.html', {
         'project': project,

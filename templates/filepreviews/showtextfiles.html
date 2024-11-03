@@ -4,7 +4,14 @@
         <ul>
             {% for file in text_files %}
                 <li>
-                    <a href="{{ file.file.url }}" target="_blank">{{ file.file.name }}</a>
+                    <a href="{{ file.file.url }}" target="_blank">{{ file.title }}</a>
+
+                    <p><strong>Uploaded By:</strong> {{ file.uploaded_by }}</p>
+                    <p><strong>Uploaded On:</strong> {{ file.created_at|date:"Y-m-d H:i" }}</p>
+                    <p><strong>Description:</strong> {{ file.description }}</p>
+                    <p><strong>Keywords:</strong> {{ file.keywords }}</p>
+                    
+                    <a href="{% url 'edit_metadata' file.id %}" class="btn btn-secondary btn-sm mt-2">Edit Metadata</a>
                 </li>
             {% endfor %}
         </ul>

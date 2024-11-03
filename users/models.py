@@ -17,6 +17,9 @@ class ProjectFiles(models.Model):
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     audio_file = models.FileField(upload_to='uploads/')
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    keywords = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f"{self.file.name} ({self.project.name})"
