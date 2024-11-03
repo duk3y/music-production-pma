@@ -6,18 +6,34 @@
         <h1>Upload Your Music Files</h1>
         <p>Organize and manage your music projects by uploading files below.</p>
 
-        <!-- File Upload Form -->
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="id_file" style="color: white;">Select File</label>
-                {{form.file}}
+            
+            <div class="form-group mt-3">
+                <label for="id_title" style="color: white;">File Title</label>
+                {{ form.title }}
             </div>
-            <button type="submit" class="btn btn-primary" style="background-color: #1DB954; border: none; width: 100%; padding: 10px;">Upload</button>
-        </form>
-        <br>
-        <br>
 
+            <div class="form-group mt-3">
+                <label for="id_description" style="color: white;">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="form-group mt-3">
+                <label for="id_keywords" style="color: white;">Keywords</label>
+                {{ form.keywords }}
+                <small style="color: #ccc;">(Separate keywords with commas)</small>
+            </div>
+
+            <div class="form-group mt-3">
+                <label for="id_file" style="color: white;">Select File</label>
+                {{ form.file }}
+            </div>
+            
+            <button type="submit" class="btn btn-primary mt-4" style="background-color: #1DB954; border: none; width: 100%; padding: 10px;">
+                Upload
+            </button>
+        </form>
     </div>
 </div>
 {% endblock %}

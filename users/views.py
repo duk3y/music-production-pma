@@ -10,6 +10,7 @@ from django.urls import reverse
 from .models import ProjectFiles, Comment 
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, get_object_or_404
+from mysite.forms import UploadFileForm
 import json
 
 
@@ -90,3 +91,16 @@ def add_comment(request, project_file_id):
             user=user
         )
         return redirect('audio_playback', project_file_id=project_file_id)
+
+@login_required
+def edit_metadata(request, file_id):
+    file_instance = get_object_or_404(ProjectFiles, id=file_id)
+
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, instance=file_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('project_info', project_id=file_instance.project.id)
+    else:
+        form = UploadFileForm(instance=file_instance)
+    return render(request, 'edit_metadata.html', {'form': form, 'file_instance': file_instance})
