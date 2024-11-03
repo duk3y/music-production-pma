@@ -4,12 +4,12 @@
         <ul>
             {% for file in audio_files %}
                 <li>
-                    <audio controls>
-                        <source src="{{ file.file.url }}" type="audio/mpeg">
-                        Your browser does not support the audio element.
-                    </audio>
+                    <!-- Link the file title to its playback page -->
+                    <h4>
+                        <a href="{% url 'audio_playback' file.id %}">{{ file.title }}</a>
+                    </h4>
                     
-                    <h4>{{ file.title }}</h4>
+                    <!-- Additional Metadata and Actions -->
                     <p><strong>Uploaded By:</strong> {{ file.uploaded_by }}</p>
                     <p><strong>Uploaded On:</strong> {{ file.created_at|date:"Y-m-d H:i" }}</p>
                     <p><strong>Description:</strong> {{ file.description }}</p>

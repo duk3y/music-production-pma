@@ -54,23 +54,14 @@ def join_project(request):
     return render(request, 'joinproject.html', {'form': form})
 
 def audio_playback(request, file_id):
-    # Attempt to retrieve the audio file from the database
-    try:
-        audio = ProjectFiles.objects.get(id=file_id)
-    except ProjectFiles.DoesNotExist:
-        audio = None  # If the entry doesn't exist, set audio to None
+    audio_file = get_object_or_404(ProjectFiles, id=file_id)
+    audio_url = audio_file.file.url  # Assuming `file` is the field with the audio file
 
-    # Hard-code the audio file path for testing
-    audio_file_url = "/media/uploads/Ponyo_Thunder.m4a"  # Adjust the path based on your MEDIA_URL and file location
-
-    # Check if the audio_file field has an associated file or use the hard-coded path
-    audio_url = audio.audio_file.url if audio and audio.audio_file else audio_file_url
-
-    # Fetch comments if you have a Comment model
-    comments = audio.comments.all() if audio and hasattr(audio, 'comments') else []
+    # If `comments` is a related field to `ProjectFiles` model
+    comments = audio_file.comments.all() if hasattr(audio_file, 'comments') else []
 
     return render(request, 'audio_playback.html', {
-        'audio': audio,
+        'audio': audio_file,
         'audio_url': audio_url,
         'comments': comments,
     })

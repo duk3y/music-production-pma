@@ -2,6 +2,7 @@
 
 {% block content %}
 <div class="container">
+
     <h1>{{ audio.name }} - Audio Playback</h1>
 
     <!-- Waveform Container -->
@@ -23,12 +24,14 @@
             {% endfor %}
         </ul>
     </div>
-    
 
     <form id="comment-form" class="mt-4">
         <input type="text" id="comment-input" placeholder="Add a comment..." required>
         <button type="submit">Add Comment</button>
     </form>
+
+    <!-- Back Button -->
+    <button class="backbutton" onclick="window.history.back()" class="btn btn-secondary mb-3">Back</button>
 </div>
 
 <style>
@@ -38,6 +41,10 @@
     }
     .comment-section {
         margin-top: 20px;
+    }
+    backbutton {
+        margin-top: 500px;
+        color: white;
     }
 </style>
 
