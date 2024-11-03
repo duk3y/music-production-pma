@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ audio.name }} - Audio Playback</h1>
+
+    <!-- Waveform Container -->
+    <div id="waveform" style="width: 100%; height: 200px; background: #222;"></div>
+
+    <!-- Play/Pause Button -->
+    <button id="play-button">Play</button>
+
+    <!-- Comment Form and Comment List -->
+    <div class="comment-section mt-4">
+        <h3>Comments</h3>
+        <ul id="comment-list">
+            {% for comment in comments %}
+                <li data-timestamp="{{ comment.timestamp }}">
+                    <strong class="comment-timestamp" data-timestamp="{{ comment.timestamp }}">
+                        {{ comment.timestamp|floatformat:2 }}s
+                    </strong> - {{ comment.text }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+
+    <form id="comment-form" class="mt-4">
+        <input type="text" id="comment-input" placeholder="Add a comment..." required>
+        <button type="submit">Add Comment</button>
+    </form>
+</div>
+
+<style>
+    #waveform {
+        position: relative;
+        background: #333;
+    }
+    .comment-section {
+        margin-top: 20px;
+    }
+</style>
+
+<script src="https://unpkg.com/wavesurfer.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const waveSurfer = WaveSurfer.create({
+            container: '#waveform',
+            waveColor: '#1DB954',
+            progressColor: '#1AA34A',
+            backend: 'MediaElement',
+        });
+
+        // Load the audio file
+        waveSurfer.load("{{ audio_url }}");
+
+        const playButton = document.getElementById('play-button');
+
+        // Toggle play/pause on button click
+        playButton.addEventListener('click', function () {
+            if (waveSurfer.isPlaying()) {
+                waveSurfer.pause();
+                playButton.textContent = 'Play';
+            } else {
+                waveSurfer.play();
+                playButton.textContent = 'Pause';
+            }
+        });
+
+        // Update button text on audio end
+        waveSurfer.on('finish', function () {
+            playButton.textContent = 'Play';
+        });
+
+        const commentList = document.getElementById('comment-list');
+        const commentForm = document.getElementById('comment-form');
+        const commentInput = document.getElementById('comment-input');
+
+        // Handle comment addition
+        commentForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const currentTime = waveSurfer.getCurrentTime();
+            const commentText = commentInput.value;
+            addComment(currentTime, commentText);
+            commentInput.value = '';
+        });
+
+        // Function to add a comment at a specific timestamp
+        function addComment(time, text) {
+            const formattedTime = time.toFixed(2);
+            const listItem = document.createElement('li');
+            listItem.dataset.timestamp = time;
+            listItem.innerHTML = `<strong onclick="waveSurfer.seekTo(${time / waveSurfer.getDuration()})">${formattedTime}s</strong> - ${text}`;
+            commentList.appendChild(listItem);
+
+            // Save the comment via AJAX
+            saveComment(time, text);
+        }
+
+        // Function to save comment to the backend
+        function saveComment(time, text) {
+            fetch("{% url 'add_comment' audio.id %}", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ timestamp: time, text: text })
+            });
+        }
+    });
+</script>
+{% endblock %}
