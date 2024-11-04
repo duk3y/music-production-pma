@@ -208,6 +208,7 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
+SOCIALACCOUNT_LOGIN_ON_GET = True  # Automatically log users in on GET request
 LOGIN_URL = '/accounts/google/login/'
 LOGIN_REDIRECT_URL = 'login_redirect'
 # LOGIN_URL = 'login'
