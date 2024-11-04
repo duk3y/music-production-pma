@@ -98,3 +98,7 @@ def login_redirect(request):
     else:
         return redirect('common_default')
 
+def project_chat_room(request, project_id):
+    return render(request, 'chat_room.html', {
+        'project_id': project_id
+    })

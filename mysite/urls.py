@@ -33,6 +33,7 @@ urlpatterns = [
     path('projects/<int:project_id>', ProjectDetailView, name="project_info" ),
     path('', include('users.urls')),  
     path('login-redirect/', login_redirect, name='login_redirect'),
+    path('projects/<str:project_id>/chat/', views.project_chat_room, name='project_chat_room'),
 ]
 """# uncomment these lines if you want to test during development, not needed during production (heroku)
 from django.conf import settings
