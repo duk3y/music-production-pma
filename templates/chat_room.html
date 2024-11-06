@@ -29,29 +29,42 @@
         'ws://' + window.location.host + '/ws/chat/' + projectId + '/'
     );
 
-    // Log WebSocket connection status when it opens
+    // WebSocket open event
     chatSocket.onopen = function(e) {
         console.log("WebSocket connection established");
     };
 
     // Handle incoming messages
+// Handle incoming messages
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        console.log("Received data from server:", data);  // Debug: log received message
+        console.log("Received data from server:", data);  // Verify received data structure
 
         const chatLog = document.querySelector('#chat-log');
 
-        // Append the new message to the chat log
-        chatLog.innerHTML += `<p><strong>${data.user_email}:</strong> ${data.message}</p>`;
+        // Define userDisplay and log to see the content explicitly
+        const userDisplay = data.user || "Fallback User";  // Explicit fallback to detect `undefined`
+        console.log("User to display:", userDisplay);  // Log to check actual value before displaying
 
-        // Auto-scroll to the latest message
+    // Check if `data.user` or `userDisplay` is undefined at this point
+        if (!userDisplay) {
+            console.error("User display name is undefined, using fallback text.");
+    }
+
+    // Create a new message element and use `textContent` for secure rendering
+        const messageElement = document.createElement("p");
+        messageElement.textContent = `${userDisplay}: ${data.message}`;  // Use `textContent` for security
+
+    // Append the message to the chat log and auto-scroll
+        chatLog.appendChild(messageElement);
         chatLog.scrollTop = chatLog.scrollHeight;
     };
 
-    // Handle WebSocket close events
+
+    // WebSocket close event
     chatSocket.onclose = function(e) {
-    alert("You do not have permission to access this chat or you were disconnected.");
-    window.location.href = '/'; // Redirect to the homepage or an error page
+        alert("You do not have permission to access this chat or you were disconnected.");
+        window.location.href = '/'; // Redirect to homepage
     };
 
     // Focus on message input
@@ -69,8 +82,7 @@
         const messageInputDom = document.querySelector('#chat-message-input');
         const message = messageInputDom.value;
 
-        // Debug: Log message content and WebSocket readiness before sending
-        console.log("Attempting to send message:", message);
+        console.log("Attempting to send message:", message);  // Log message content before sending
         console.log("WebSocket readyState:", chatSocket.readyState);  // Log WebSocket status
 
         // Send the message if WebSocket is open
