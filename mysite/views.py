@@ -98,7 +98,17 @@ def login_redirect(request):
     else:
         return redirect('common_default')
 
+# mysite/views.py
+
+
+@login_required
 def project_chat_room(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+
+    # Check if the user is a collaborator or the project owner
+    if project.user != request.user and request.user not in project.collaborators.all():
+        return redirect('home')  # Redirect to home or an error page if unauthorized
+
     return render(request, 'chat_room.html', {
         'project_id': project_id
     })

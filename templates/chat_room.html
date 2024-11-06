@@ -20,7 +20,8 @@
     };
 
     chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
+    alert("You do not have permission to access this chat or you were disconnected.");
+    window.location.href = '/'; // Redirect to the homepage or an error page
     };
 
     document.querySelector('#chat-message-input').focus();
