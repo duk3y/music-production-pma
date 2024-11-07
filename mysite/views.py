@@ -110,5 +110,7 @@ def project_chat_room(request, project_id):
         return redirect('home')  # Redirect to home or an error page if unauthorized
 
     return render(request, 'chat_room.html', {
-        'project_id': project_id
+        'project_id': project_id,
+        'project_name': project.name,
+
     })

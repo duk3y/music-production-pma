@@ -1,27 +1,126 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Project Chat</title>
+    <meta charset="UTF-8">
+    <title>Project Chat Room</title>
     <style>
-        /* Styling for the chat log */
+        /* General styling for dark theme */
+        body {
+            background-color: #1e1e2e;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            color: #ffffff;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        /* Chat log styling */
         #chat-log {
-            border: 1px solid #ddd;
-            padding: 10px;
+            width: 80%;
+            max-width: 600px;
+            background-color: #282a36;
+            border-radius: 10px;
+            padding: 15px;
             height: 300px;
-            overflow-y: scroll;
-            margin-bottom: 10px;
+            overflow-y: auto;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+            margin-bottom: 15px;
+        }
+
+        #chat-log p {
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        #chat-log p:nth-child(odd) {
+            background-color: #44475a;
+        }
+
+        #chat-log p:nth-child(even) {
+            background-color: #3c404d;
+        }
+
+        /* Input and send button styling */
+        .chat-input-container {
+            display: flex;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        #chat-message-input {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            color: #ffffff;
+            background-color: #44475a;
+            border: none;
+            border-radius: 8px 0 0 8px;
+            outline: none;
+        }
+
+        #chat-message-input::placeholder {
+            color: #bfbfbf;
+        }
+
+        #chat-message-submit {
+            padding: 0 20px;
+            font-size: 14px;
+            background-color: #6272a4;
+            color: #ffffff;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.3s;
+        }
+
+        #chat-message-submit:hover {
+            background-color: #7086b4;
+        }
+
+        #chat-message-submit:active {
+            background-color: #55628a;
+        }
+
+        /* Scrollbar styling */
+        #chat-log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-log::-webkit-scrollbar-track {
+            background: #282a36;
+        }
+
+        #chat-log::-webkit-scrollbar-thumb {
+            background: #6272a4;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
-<h2>Project Chat Room</h2>
+
+<h2>{{ project_name }} Chat Room</h2>
 
 <!-- Chat Log Section -->
 <div id="chat-log"></div>
 
 <!-- Message Input and Send Button -->
-<input id="chat-message-input" type="text" size="100" placeholder="Type your message here">
-<button id="chat-message-submit">Send</button>
+<div class="chat-input-container">
+    <input id="chat-message-input" type="text" placeholder="Type your message here...">
+    <button id="chat-message-submit">Send</button>
+</div>
 
 <script>
     const projectId = "{{ project_id }}";
@@ -35,7 +134,6 @@
     };
 
     // Handle incoming messages
-// Handle incoming messages
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         console.log("Received data from server:", data);  // Verify received data structure
@@ -43,23 +141,17 @@
         const chatLog = document.querySelector('#chat-log');
 
         // Define userDisplay and log to see the content explicitly
-        const userDisplay = data.user || "Fallback User";  // Explicit fallback to detect `undefined`
+        const userDisplay = data.user || "Fallback User";
         console.log("User to display:", userDisplay);  // Log to check actual value before displaying
 
-    // Check if `data.user` or `userDisplay` is undefined at this point
-        if (!userDisplay) {
-            console.error("User display name is undefined, using fallback text.");
-    }
-
-    // Create a new message element and use `textContent` for secure rendering
+        // Create a new message element and use `textContent` for secure rendering
         const messageElement = document.createElement("p");
-        messageElement.textContent = `${userDisplay}: ${data.message}`;  // Use `textContent` for security
+        messageElement.textContent = `${userDisplay}: ${data.message}`;
 
-    // Append the message to the chat log and auto-scroll
+        // Append the message to the chat log and auto-scroll
         chatLog.appendChild(messageElement);
         chatLog.scrollTop = chatLog.scrollHeight;
     };
-
 
     // WebSocket close event
     chatSocket.onclose = function(e) {
@@ -82,15 +174,14 @@
         const messageInputDom = document.querySelector('#chat-message-input');
         const message = messageInputDom.value;
 
-        console.log("Attempting to send message:", message);  // Log message content before sending
-        console.log("WebSocket readyState:", chatSocket.readyState);  // Log WebSocket status
+        console.log("Attempting to send message:", message);
+        console.log("WebSocket readyState:", chatSocket.readyState);
 
-        // Send the message if WebSocket is open
         if (chatSocket.readyState === WebSocket.OPEN) {
             chatSocket.send(JSON.stringify({
                 'message': message
             }));
-            console.log("Message sent:", message);  // Confirm that message was sent
+            console.log("Message sent:", message);
         } else {
             console.error("WebSocket is not open. Message not sent.");
         }
