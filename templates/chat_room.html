@@ -114,13 +114,20 @@
 <h2>{{ project_name }} Chat Room</h2>
 
 <!-- Chat Log Section -->
-<div id="chat-log"></div>
+<div id="chat-log">
+    {% for comment in comments %}
+        <p><strong>{{ comment.user.username}}:</strong> {{ comment.text }}</p>
+    {% endfor %}
+</div>
 
 <!-- Message Input and Send Button -->
-<div class="chat-input-container">
-    <input id="chat-message-input" type="text" placeholder="Type your message here...">
-    <button id="chat-message-submit">Send</button>
-</div>
+<form id="commentForm" method="POST" onsubmit="return sendMessage();">
+    {% csrf_token %}
+    <div class="chat-input-container">
+        <input id="chat-message-input" type="text" name="text" placeholder="Type your message here...">
+        <button id="chat-message-submit" type="submit">Send</button>
+    </div>
+</form>
 
 <script>
     const projectId = "{{ project_id }}";
@@ -136,20 +143,17 @@
     // Handle incoming messages
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
-        console.log("Received data from server:", data);  // Verify received data structure
+        console.log("Received data from server:", data);
 
         const chatLog = document.querySelector('#chat-log');
+        const userDisplay = data.user || "Anonymous";
 
-        // Define userDisplay and log to see the content explicitly
-        const userDisplay = data.user || "Fallback User";
-        console.log("User to display:", userDisplay);  // Log to check actual value before displaying
-
-        // Create a new message element and use `textContent` for secure rendering
+        // Create and append the message element
         const messageElement = document.createElement("p");
         messageElement.textContent = `${userDisplay}: ${data.message}`;
-
-        // Append the message to the chat log and auto-scroll
         chatLog.appendChild(messageElement);
+
+        // Auto-scroll to the latest message
         chatLog.scrollTop = chatLog.scrollHeight;
     };
 
@@ -159,35 +163,34 @@
         window.location.href = '/'; // Redirect to homepage
     };
 
-    // Focus on message input
-    document.querySelector('#chat-message-input').focus();
-
-    // Send message on Enter key
-    document.querySelector('#chat-message-input').onkeyup = function(e) {
-        if (e.keyCode === 13) {  // Enter key
-            document.querySelector('#chat-message-submit').click();
-        }
-    };
-
-    // Handle sending messages
-    document.querySelector('#chat-message-submit').onclick = function(e) {
+    // Prevent default form submission and send the message through WebSocket
+    function sendMessage() {
         const messageInputDom = document.querySelector('#chat-message-input');
-        const message = messageInputDom.value;
+        const message = messageInputDom.value.trim();  // Trim whitespace
 
         console.log("Attempting to send message:", message);
-        console.log("WebSocket readyState:", chatSocket.readyState);
 
-        if (chatSocket.readyState === WebSocket.OPEN) {
+        // Only send if message is non-empty and WebSocket is open
+        if (message && chatSocket.readyState === WebSocket.OPEN) {
             chatSocket.send(JSON.stringify({
                 'message': message
             }));
             console.log("Message sent:", message);
+
+            // Clear the input field after sending
+            messageInputDom.value = '';
         } else {
-            console.error("WebSocket is not open. Message not sent.");
+            console.log("Empty message or WebSocket not open, message not sent.");
         }
 
-        // Clear the input field
-        messageInputDom.value = '';
+        return false; // Prevent form from submitting traditionally
+    }
+
+    // Send message on Enter key
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.key === "Enter") {
+            sendMessage();
+        }
     };
 </script>
 </body>

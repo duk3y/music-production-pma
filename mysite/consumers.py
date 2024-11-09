@@ -1,11 +1,12 @@
-# mysite/consumers.py
+# consumers.py
 
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
 from users.models import Project
+from users.models import Comment  # Import your Comment model
+from django.utils import timezone
 import json
-
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -39,20 +40,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        message = data.get('message', '')
-        user = self.user.username  # Get the username (or self.user.email for email)
+        message = data.get('message', '').strip()  # Remove any extra whitespace
 
-        # Broadcast message with user info to the group
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'message': message,
-                'user': user,  # Ensure this key is sent
-            }
-        )
+        # Only proceed if the message is not empty
+        if message:
+            # Save the message to the database
+            await self.save_message(self.project_id, self.user, message)
 
-    # consumers.py
+            # Broadcast message with user info to the group
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message,
+                    'user': self.user.username,
+                }
+            )
+
     async def chat_message(self, event):
         message = event['message']
         user = event['user']  # Ensure this matches the key in `group_send`
@@ -70,3 +74,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return project.user == user or user in project.collaborators.all()
         except Project.DoesNotExist:
             return False
+
+    @database_sync_to_async
+    def save_message(self, project_id, user, message):
+        """ Save the message to the database """
+        project = Project.objects.get(id=project_id)
+        Comment.objects.create(
+            project=project,
+            user=user,
+            text=message,
+            timestamp=timezone.now().timestamp()
+        )
