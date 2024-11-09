@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <title>Project Chat Room</title>
     <style>
+        /* Styling for the Back button */
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            font-size: 14px;
+            background-color: #6272a4;
+            color: #ffffff;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+        }
+        .back-button:hover {
+            background-color: #7086b4;
+        }
+
         /* General styling for dark theme */
         body {
             background-color: #1e1e2e;
@@ -112,6 +128,9 @@
 <body>
 
 <h2>{{ project_name }} Chat Room</h2>
+
+<!-- Back to Project Info Button -->
+<a href="/projects/{{ project_id }}" class="back-button">Back to Project Info</a>
 
 <!-- Chat Log Section -->
 <div id="chat-log">
