@@ -106,7 +106,7 @@ def project_chat_room(request, project_id):
 
     # Check if the user is a collaborator or the project owner
     if project.user != request.user and request.user not in project.collaborators.all():
-        return redirect('home')  # Redirect to home or an error page if unauthorized
+        return redirect('no_access')  # Redirect to home or an error page if unauthorized
 
     # Fetch the last 100 comments for the project, ordered by timestamp
     comments = Comment.objects.filter(project=project).order_by('-timestamp')[:100]

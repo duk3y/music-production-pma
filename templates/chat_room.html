@@ -160,7 +160,7 @@
     // WebSocket close event
     chatSocket.onclose = function(e) {
         alert("You do not have permission to access this chat or you were disconnected.");
-        window.location.href = '/'; // Redirect to homepage
+        window.location.href = '/no_access/'; // Redirect to homepage
     };
 
     // Prevent default form submission and send the message through WebSocket
