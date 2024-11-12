@@ -55,33 +55,49 @@ def join_project(request):
 
 def audio_playback(request, file_id):
     audio_file = get_object_or_404(ProjectFiles, id=file_id)
-    audio_url = audio_file.file.url  # Assuming `file` is the field with the audio file
+    audio_url = audio_file.file.url
+    
+    # Get all comments for this audio file, ordered by timestamp
+    comments = Comment.objects.filter(file=audio_file).order_by('timestamp')
 
-    # If `comments` is a related field to `ProjectFiles` model
-    comments = audio_file.comments.all() if hasattr(audio_file, 'comments') else []
-
-    return render(request, 'audio_playback.html', {
+    context = {
         'audio': audio_file,
         'audio_url': audio_url,
         'comments': comments,
-    })
+    }
+    return render(request, 'audio_playback.html', context)
 
-
-def add_comment(request, project_file_id):
+@login_required
+def add_comment(request, file_id):
     if request.method == 'POST':
-        project_file = get_object_or_404(ProjectFiles, id=project_file_id)
-        timestamp = float(request.POST.get('timestamp'))
-        text = request.POST.get('text')
-        user = request.user if request.user.is_authenticated else None
+        audio_file = get_object_or_404(ProjectFiles, id=file_id)
+        
+        # Get the form data
+        timestamp = float(request.POST.get('timestamp', 0))
+        text = request.POST.get('text', '').strip()
+        
+        if text:  # Only create comment if there's actual text
+            Comment.objects.create(
+                file=audio_file,
+                timestamp=timestamp,
+                text=text,
+                user=request.user
+            )
+        
+        return redirect('audio_playback', file_id=file_id)
+    
+    return redirect('audio_playback', file_id=file_id)
 
-        # Save the comment
-        Comment.objects.create(
-            project=project_file.project,
-            timestamp=timestamp,
-            text=text,
-            user=user
-        )
-        return redirect('audio_playback', project_file_id=project_file_id)
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    file_id = comment.file.id  # Store the file_id before deleting the comment
+    
+    # Only allow the comment owner or project admin to delete
+    if request.user == comment.user or request.user == comment.file.project.user:
+        comment.delete()
+    
+    return redirect('audio_playback', file_id=file_id)
 
 @login_required
 def edit_metadata(request, file_id):
