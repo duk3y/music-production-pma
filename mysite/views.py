@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from users.models import Profile, Project, ProjectFiles
 from users.forms import ProjectForm 
 from .forms import UploadFileForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 @login_required()
@@ -32,8 +33,10 @@ def home(request):
 class CustomLoginView(LoginView):
     template_name = 'login.html'
 
-class CommonDefaultView(View):
+class CommonDefaultView(LoginRequiredMixin, View):
     template_name = 'commondefault.html'
+    login_url = '/login/'  # Specify the login URL
+    redirect_field_name = 'next'
 
     def get(self, request):
         user = request.user
