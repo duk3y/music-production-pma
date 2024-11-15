@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="container">
     <h1>{{ audio.name }} - Audio Playback</h1>
@@ -8,106 +7,97 @@
     <div id="waveform" style="width: 100%; height: 200px; background: #222;"></div>
 
     <!-- Play/Pause Button -->
-    <button id="play-button">Play</button>
+    <button id="playBtn" class="btn btn-primary mt-2">Play</button>
 
     <!-- Comment Form and Comment List -->
     <div class="comment-section mt-4">
         <h3>Comments</h3>
-        <ul id="comment-list">
+        <ul id="comment-list" class="list-unstyled">
             {% for comment in comments %}
-                <li data-timestamp="{{ comment.timestamp }}">
-                    <strong class="comment-timestamp" data-timestamp="{{ comment.timestamp }}">
+            <li data-timestamp="{{ comment.timestamp }}" class="mb-2 d-flex align-items-center">
+                <span class="comment-content flex-grow-1">
+                    <strong class="comment-timestamp" data-timestamp="{{ comment.timestamp }}" style="cursor: pointer;">
                         {{ comment.timestamp|floatformat:2 }}s
-                    </strong> - {{ comment.text }}
-                </li>
+                    </strong> - 
+                    <span class="comment-text">{{ comment.text }}</span>
+                    {% if comment.user %}
+                        <small class="text-muted">(by {{ comment.user.username }})</small>
+                    {% endif %}
+                </span>
+                {% if user == comment.user or user == audio.project.user %}
+                <form method="POST" action="{% url 'delete_comment' comment.id %}" class="delete-comment-form d-inline ml-2">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm" 
+                            onclick="return confirm('Are you sure you want to delete this comment?')">
+                        Delete
+                    </button>
+                </form>
+                {% endif %}
+            </li>
             {% endfor %}
         </ul>
     </div>
-    
 
-    <form id="comment-form" class="mt-4">
-        <input type="text" id="comment-input" placeholder="Add a comment..." required>
-        <button type="submit">Add Comment</button>
+    <form method="POST" action="{% url 'add_comment' audio.id %}" class="mt-4">
+        {% csrf_token %}
+        <input type="hidden" name="timestamp" id="comment-timestamp" value="0">
+        <div class="input-group">
+            <input type="text" name="text" class="form-control" placeholder="Add a comment..." required>
+            <button type="submit" class="btn btn-primary">Add Comment</button>
+        </div>
     </form>
+
+    <a href="{% url 'project_info' audio.project.id %}" class="btn btn-secondary mt-3">Back</a>
 </div>
 
-<style>
-    #waveform {
-        position: relative;
-        background: #333;
-    }
-    .comment-section {
-        margin-top: 20px;
-    }
-</style>
-
-<script src="https://unpkg.com/wavesurfer.js"></script>
+<!-- WaveSurfer.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/6.6.3/wavesurfer.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const waveSurfer = WaveSurfer.create({
-            container: '#waveform',
-            waveColor: '#1DB954',
-            progressColor: '#1AA34A',
-            backend: 'MediaElement',
-        });
-
-        // Load the audio file
-        waveSurfer.load("{{ audio_url }}");
-
-        const playButton = document.getElementById('play-button');
-
-        // Toggle play/pause on button click
-        playButton.addEventListener('click', function () {
-            if (waveSurfer.isPlaying()) {
-                waveSurfer.pause();
-                playButton.textContent = 'Play';
-            } else {
-                waveSurfer.play();
-                playButton.textContent = 'Pause';
-            }
-        });
-
-        // Update button text on audio end
-        waveSurfer.on('finish', function () {
-            playButton.textContent = 'Play';
-        });
-
-        const commentList = document.getElementById('comment-list');
-        const commentForm = document.getElementById('comment-form');
-        const commentInput = document.getElementById('comment-input');
-
-        // Handle comment addition
-        commentForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            const currentTime = waveSurfer.getCurrentTime();
-            const commentText = commentInput.value;
-            addComment(currentTime, commentText);
-            commentInput.value = '';
-        });
-
-        // Function to add a comment at a specific timestamp
-        function addComment(time, text) {
-            const formattedTime = time.toFixed(2);
-            const listItem = document.createElement('li');
-            listItem.dataset.timestamp = time;
-            listItem.innerHTML = `<strong onclick="waveSurfer.seekTo(${time / waveSurfer.getDuration()})">${formattedTime}s</strong> - ${text}`;
-            commentList.appendChild(listItem);
-
-            // Save the comment via AJAX
-            saveComment(time, text);
-        }
-
-        // Function to save comment to the backend
-        function saveComment(time, text) {
-            fetch("{% url 'add_comment' audio.id %}", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ timestamp: time, text: text })
-            });
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize WaveSurfer
+    const wavesurfer = WaveSurfer.create({
+        container: '#waveform',
+        waveColor: '#4CAF50',
+        progressColor: '#1976D2',
+        cursorColor: '#fff',
+        barWidth: 2,
+        barRadius: 3,
+        cursorWidth: 1,
+        height: 200,
+        barGap: 3
     });
+
+    // Load audio file
+    wavesurfer.load('{{ audio_url }}');
+
+    // Play/Pause button functionality
+    const playBtn = document.getElementById('playBtn');
+    playBtn.onclick = function() {
+        wavesurfer.playPause();
+        playBtn.textContent = wavesurfer.isPlaying() ? 'Pause' : 'Play';
+    };
+
+    // Comment form functionality
+    const form = document.querySelector('form');
+    const timestampInput = document.getElementById('comment-timestamp');
+    
+    // Update timestamp when form is submitted
+    form.addEventListener('submit', function(e) {
+        timestampInput.value = wavesurfer.getCurrentTime();
+    });
+
+    // Make comments clickable to jump to timestamp
+    document.querySelectorAll('.comment-timestamp').forEach(function(timestamp) {
+        timestamp.addEventListener('click', function() {
+            const time = parseFloat(this.dataset.timestamp);
+            wavesurfer.setCurrentTime(time);
+        });
+    });
+
+    // Update button text when playback ends
+    wavesurfer.on('finish', function() {
+        playBtn.textContent = 'Play';
+    });
+});
 </script>
 {% endblock %}
