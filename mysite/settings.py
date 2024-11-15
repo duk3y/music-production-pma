@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'users',
-    'storages'
+    'storages',
+    'mysite',
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -174,8 +175,8 @@ if os.getenv('ENV') == 'production':
     MIDDLEWARE.remove('whitenoise.middleware.WhiteNoiseMiddleware')
 
 else:
-    MEDIA_ROOT = BASE_DIR / "uploads/"
-    MEDIA_URL = "media/"
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
+    MEDIA_URL = "/media/"
 
     # Static files (CSS, JavaScript, Images)
     # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -207,6 +208,7 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
+SOCIALACCOUNT_LOGIN_ON_GET = True  # Automatically log users in on GET request
 LOGIN_URL = '/accounts/google/login/'
 LOGIN_REDIRECT_URL = 'login_redirect'
 # LOGIN_URL = 'login'

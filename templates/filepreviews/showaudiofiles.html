@@ -1,15 +1,15 @@
 <div>
-    <h3>Video Files</h3>
-    {% if video_files %}
+    <h3>Audio Files</h3>
+    {% if audio_files %}
         <ul>
-            {% for file in video_files %}
+            {% for file in audio_files %}
                 <li>
-                    <video width="320" height="240" controls>
-                        <source src="{{ file.file.url }}" type="video/mp4">
-                        Your browser does not support the video tag.
-                    </video>
-
-                    <h4>{{ file.title }}</h4>
+                    <!-- Link the file title to its playback page -->
+                    <h4>
+                        <a href="{% url 'audio_playback' file.id %}">{{ file.title }}</a>
+                    </h4>
+                    
+                    <!-- Additional Metadata and Actions -->
                     <p><strong>Uploaded By:</strong> {{ file.uploaded_by }}</p>
                     <p><strong>Uploaded On:</strong> {{ file.created_at|date:"Y-m-d H:i" }}</p>
                     <p><strong>Description:</strong> {{ file.description }}</p>
@@ -20,6 +20,6 @@
             {% endfor %}
         </ul>
     {% else %}
-        <p>No video files uploaded.</p>
+        <p>No audio files uploaded.</p>
     {% endif %}
 </div>

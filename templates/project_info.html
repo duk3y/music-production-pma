@@ -92,6 +92,9 @@
             <li class="nav-item">
               <a class="nav-link" id='text-files-tab' data-bs-toggle="tab" href="#text-files">Text Files</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="audio-files-tab" data-bs-toggle="tab" href="#audio-files">Audio Files</a>
+            </li>
         </ul>
 
         <div class="tab-content mt-3">
@@ -103,6 +106,9 @@
             </div>
             <div class="tab-pane fade" id="text-files">
                 {% include 'filepreviews/showtextfiles.html' %}
+            </div>
+            <div class="tab-pane fade" id="audio-files">
+                {% include 'filepreviews/showaudiofiles.html' %}
             </div>
         </div>
 
