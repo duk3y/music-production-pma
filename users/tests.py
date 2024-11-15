@@ -40,9 +40,12 @@ class GoogleOAuthRedirectionTestCase(TestCase):
 class GoogleOAuthLoginSuccessTestCase(TestCase):
 
     def setUp(self):
+        # Create site for OAuth
         site, created = Site.objects.update_or_create(
             id=1, defaults={'domain': '127.0.0.1', 'name': 'localhost'}
         )
+        
+        # Create Google app
         google_app = SocialApp.objects.create(
             provider='google',
             name='Google',
@@ -53,7 +56,12 @@ class GoogleOAuthLoginSuccessTestCase(TestCase):
         
         # Create test user
         self.user = User.objects.create_user(username='testuser', password='password')
-        Profile.objects.create(user=self.user, pmaStatus=False)
+        
+        # Use update_or_create instead of create
+        Profile.objects.update_or_create(
+            user=self.user,
+            defaults={'pmaStatus': False}
+        )
 
     def test_successful_login_redirect(self):
         # Simulate a successful login
