@@ -31,27 +31,62 @@ def create_project(request):
         form = ProjectForm()
     return render(request, 'createproject.html', {'form': form})
 
+
+@login_required
+def join_private_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    
+    # Redirect if project is not private or user is already a member
+    if not project.is_private:
+        return redirect('join_project')
+    if request.user in project.collaborators.all() or project.user == request.user:
+        return redirect('join_project')
+    
+    if request.method == "POST":
+        password = request.POST.get('password')
+        if project.password == password:
+            project.collaborators.add(request.user)
+            project.save()
+            return redirect('common_default')
+        else:
+            return render(request, 'join_private_project.html', {
+                'project': project,
+                'error': 'Incorrect password'
+            })
+    
+    return render(request, 'join_private_project.html', {'project': project})
+
 @login_required
 def join_project(request):
     if request.method == "POST":
-        form = JoinProjectForm(request.POST)
-        if form.is_valid():
-            project_name = form.cleaned_data['project_name']
-            try:
-                project = Project.objects.get(name=project_name)
+        project_id = request.POST.get('project_id')
+        try:
+            project = Project.objects.get(id=project_id)
+            
+            if request.user in project.collaborators.all() or project.user == request.user:
+                return render(request, 'joinproject.html', {
+                    'projects': Project.objects.all().order_by('name'),
+                    'error': 'You are already part of this project.'
+                })
+            elif project.is_private:
+                return redirect('join_private_project', project_id=project.id)
+            else:
+                project.collaborators.add(request.user)
+                project.save()
+                return redirect('common_default')
                 
-                if request.user in project.collaborators.all() or project.user == request.user:
-                    form.add_error('project_name', 'You are already part of this project.')
-                else:
-                    project.collaborators.add(request.user)
-                    project.save()
-                    return redirect('common_default')
-            except Project.DoesNotExist:
-                form.add_error('project_name', 'No project found with that name.')
-    else:
-        form = JoinProjectForm()
-
-    return render(request, 'joinproject.html', {'form': form})
+        except Project.DoesNotExist:
+            return render(request, 'joinproject.html', {
+                'projects': Project.objects.all().order_by('name'),
+                'error': 'Project not found.'
+            })
+    
+    projects = Project.objects.all().order_by('name')
+    return render(request, 'joinproject.html', {'projects': projects})
+    
+    # GET request - show all projects
+    projects = Project.objects.all().order_by('name')
+    return render(request, 'joinproject.html', {'projects': projects})
 
 def audio_playback(request, file_id):
     audio_file = get_object_or_404(ProjectFiles, id=file_id)
