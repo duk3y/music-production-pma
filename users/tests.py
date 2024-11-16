@@ -8,7 +8,6 @@ from users.models import Profile, Project
 from django.contrib import auth
 from urllib.parse import urlparse, parse_qs
 
-
 @override_settings(SITE_ID=1)  # Force SITE_ID to 1 during the test
 class GoogleOAuthRedirectionTestCase(TestCase):
 
@@ -30,7 +29,7 @@ class GoogleOAuthRedirectionTestCase(TestCase):
     def test_oauth_redirection(self):
         # Access the project creation page without being logged in
         response = self.client.get(reverse('create_project'))
-
+        
         # Just check the initial redirect status code and URL
         self.assertEqual(response.status_code, 302)
         expected_url = '/accounts/google/login/?next=/create-project/'
@@ -39,7 +38,6 @@ class GoogleOAuthRedirectionTestCase(TestCase):
             f"Expected URL to end with {expected_url}, got {response.url}"
         )
 
-
 @override_settings(SITE_ID=1)
 class GoogleOAuthLoginSuccessTestCase(TestCase):
     def setUp(self):
@@ -47,7 +45,7 @@ class GoogleOAuthLoginSuccessTestCase(TestCase):
         site, created = Site.objects.update_or_create(
             id=1, defaults={'domain': '127.0.0.1', 'name': 'localhost'}
         )
-
+        
         # Create Google app
         google_app = SocialApp.objects.create(
             provider='google',
@@ -56,7 +54,7 @@ class GoogleOAuthLoginSuccessTestCase(TestCase):
             secret='fake-secret-key'
         )
         google_app.sites.add(site)
-
+        
         # Create test user
         self.user = User.objects.create_user(username='testuser', password='password')
         Profile.objects.update_or_create(
@@ -67,37 +65,36 @@ class GoogleOAuthLoginSuccessTestCase(TestCase):
     def test_successful_login_redirect(self):
         # Access the create project page without logging in first
         response = self.client.get(reverse('create_project'))
-
+        
         # Should be redirected to login page
         self.assertEqual(response.status_code, 302)
-
+        
         # Parse the redirect URL and its query parameters
         parsed_url = urlparse(response.url)
         query_params = parse_qs(parsed_url.query)
-
+        
         # Verify redirect path and next parameter
         self.assertEqual(parsed_url.path, '/accounts/google/login/')
         self.assertEqual(query_params.get('next', [None])[0], '/create-project/')
-
+        
         # Now login
         login_successful = self.client.login(username='testuser', password='password')
         self.assertTrue(login_successful, "Login failed")
-
+        
         # Access create project page again after login
         response = self.client.get(reverse('create_project'))
-
+        
         # Now should get a 200 response
         self.assertEqual(response.status_code, 200)
-
+        
         # Verify we got the create project template
         self.assertTemplateUsed(response, 'createproject.html')
-
 
 class CommonDefaultViewTestCase(TestCase):
     def setUp(self):
         # Create a user for testing
         self.user = User.objects.create_user(username='testuser', password='password')
-
+        
         # Create or update profile
         Profile.objects.update_or_create(user=self.user, defaults={'pmaStatus': False})
 
