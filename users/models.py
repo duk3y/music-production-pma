@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -25,10 +27,19 @@ class ProjectFiles(models.Model):
         return f"{self.file.name} ({self.project.name})"
 
 class Comment(models.Model):
-    file = models.ForeignKey(ProjectFiles, on_delete=models.CASCADE, related_name='comments', null=True)
-    timestamp = models.FloatField()
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='comments')
+    timestamp = models.FloatField()  # Stores the timestamp in seconds
     text = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  # Optional: user who added the comment
 
     def __str__(self):
-        return f"{self.timestamp}s: {self.text[:20]}"
+        return f"{self.project.name} - {self.timestamp}s: {self.text[:20]}"
+
+    # Limit comments to the last 100 for each project
+@receiver(post_save, sender=Comment)
+def limit_project_comments(sender, instance, **kwargs):
+    project = instance.project
+    comments = Comment.objects.filter(project=project).order_by('-timestamp')
+    if comments.count() > 100:
+        for comment in comments[100:]:  # Keep only the 100 most recent comments
+            comment.delete()

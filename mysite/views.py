@@ -2,9 +2,9 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.views import View
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
-from users.models import Profile, Project, ProjectFiles
+from users.models import Profile, Project, ProjectFiles, Comment
 from users.forms import ProjectForm 
 from .forms import UploadFileForm
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -101,3 +101,31 @@ def login_redirect(request):
     else:
         return redirect('common_default')
 
+# mysite/views.py
+
+@login_required
+def project_chat_room(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+
+    # Check if the user is a collaborator or the project owner
+    if project.user != request.user and request.user not in project.collaborators.all():
+        return redirect('no_access')  # Redirect to home or an error page if unauthorized
+
+    # Fetch the last 100 comments for the project, ordered by timestamp
+    comments = Comment.objects.filter(project=project).order_by('-timestamp')[:100]
+    comments = comments[::-1]  # Reverse to show oldest first
+
+    # Handle new comment submission via POST request
+    if request.method == 'POST':
+        text = request.POST.get('text')
+        if text:
+            # Set current time as default timestamp if not provided
+            timestamp = float(request.POST.get('timestamp', timezone.now().timestamp()))
+            Comment.objects.create(project=project, user=request.user, text=text, timestamp=timestamp)
+            return JsonResponse({'success': True})
+    print([comment.text for comment in comments])
+    return render(request, 'chat_room.html', {
+        'project_id': project_id,
+        'project_name': project.name,
+        'comments': comments,
+    })

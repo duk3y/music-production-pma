@@ -15,10 +15,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.shortcuts import render
 from django.urls import include, path
 
 from . import views
 from .views import CustomLoginView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView, upload_file, ProjectDetailView, login_redirect
+def no_access(request):
+    return render(request, 'no_access.html')
 
 urlpatterns = [
     path('projects/<int:project_id>/upload/', upload_file, name='file_upload'),  
@@ -33,6 +36,8 @@ urlpatterns = [
     path('projects/<int:project_id>', ProjectDetailView, name="project_info" ),
     path('', include('users.urls')),  
     path('login-redirect/', login_redirect, name='login_redirect'),
+    path('projects/<str:project_id>/chat/', views.project_chat_room, name='project_chat_room'),
+    path('no_access/', no_access, name='no_access'),
 ]
 """# uncomment these lines if you want to test during development, not needed during production (heroku)
 from django.conf import settings

@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'users',
     'storages',
     'mysite',
+    'channels',
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -214,3 +215,11 @@ LOGIN_REDIRECT_URL = 'login_redirect'
 # LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = '/google/google-home/'
 
+ASGI_APPLICATION = 'mysite.asgi.application'
+
+# Configure Channels layers for WebSocket communication
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # In-memory backend for development
+    },
+}
