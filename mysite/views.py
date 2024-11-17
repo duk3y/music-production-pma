@@ -30,6 +30,10 @@ def upload_file(request, project_id):
 def home(request):
     return render(request, 'home.html')
 
+def public_projects(request):
+    public_projects = Project.objects.filter(is_private=False)  # Filter to only get public projects
+    return render(request, 'public_projects.html', {'public_projects': public_projects})
+
 class CustomLoginView(LoginView):
     template_name = 'login.html'
 

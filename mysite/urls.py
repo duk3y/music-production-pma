@@ -33,6 +33,7 @@ urlpatterns = [
     path('projects/<int:project_id>', ProjectDetailView, name="project_info" ),
     path('', include('users.urls')),  
     path('login-redirect/', login_redirect, name='login_redirect'),
+    path('public-projects/', views.public_projects, name='public_projects'),
 ]
 """# uncomment these lines if you want to test during development, not needed during production (heroku)
 from django.conf import settings
