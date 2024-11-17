@@ -7,6 +7,28 @@ from django.contrib.auth.models import User
 from users.models import Profile, Project
 from django.contrib import auth
 from urllib.parse import urlparse, parse_qs
+from django.conf import settings
+import os
+
+TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+TEST_TEMPLATES_DIR = os.path.join(TEST_DIR, 'templates')
+
+@override_settings(
+    TEMPLATES=[{
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [TEST_TEMPLATES_DIR],  # Add test templates directory
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    }],
+    STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage'
+)
 
 @override_settings(SITE_ID=1)  # Force SITE_ID to 1 during the test
 class GoogleOAuthRedirectionTestCase(TestCase):
