@@ -33,7 +33,12 @@
                   <td>{{ file.title }}</td>
                   <td>{{ file.uploaded_by }}</td>
                   <td>{{ file.created_at }}</td>
-                  <td><p>delete</p></td>
+                  <td>
+                    <form method="post" action="{% url 'delete_file' file.id %}" style="display:inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                  </td>
                 </tr>
               {% empty %}
                 <tr>
