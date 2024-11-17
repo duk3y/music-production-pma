@@ -1,21 +1,23 @@
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.urls import reverse
 from django.contrib.sites.models import Site
 from allauth.socialaccount.models import SocialApp
+from django.test import override_settings
 from django.contrib.auth.models import User
 from users.models import Profile, Project
 from django.contrib import auth
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from urllib.parse import urlparse, parse_qs
 from django.conf import settings
 import os
 
 @override_settings(
+    SITE_ID=1,
     STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage',
     STATIC_URL='/static/',
     STATIC_ROOT=os.path.join(settings.BASE_DIR, 'staticfiles'),
     STATICFILES_DIRS=[os.path.join(settings.BASE_DIR, 'static')]
 )
-class GoogleOAuthLoginSuccessTestCase(TestCase):
+class GoogleOAuthRedirectionTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -30,12 +32,12 @@ class GoogleOAuthLoginSuccessTestCase(TestCase):
                 f.write(b'dummy content')
 
     def setUp(self):
-        # Create site for OAuth
+        # Create a Site object to associate the SocialApp with
         site, created = Site.objects.update_or_create(
             id=1, defaults={'domain': '127.0.0.1', 'name': 'localhost'}
         )
-        
-        # Create Google app
+
+        # Create a SocialApp object for Google OAuth and associate it with the Site
         google_app = SocialApp.objects.create(
             provider='google',
             name='Google',
@@ -43,23 +45,15 @@ class GoogleOAuthLoginSuccessTestCase(TestCase):
             secret='fake-secret-key'
         )
         google_app.sites.add(site)
-        
-        # Create test user
-        self.user = User.objects.create_user(username='testuser', password='password')
-        Profile.objects.update_or_create(
-            user=self.user,
-            defaults={'pmaStatus': False}
-        )
 
-    def test_successful_login_redirect(self):
-        # First, make sure we're logged in
-        self.client.login(username='testuser', password='password')
-        
-        # Then access the create project page
+    def test_oauth_redirection(self):
+        # Access the project creation page without being logged in
         response = self.client.get(reverse('create_project'))
         
-        # Should get a 200 response now
-        self.assertEqual(response.status_code, 200)
-        
-        # Verify we got the create project template
-        self.assertTemplateUsed(response, 'createproject.html')
+        # Check the initial redirect status code and URL
+        self.assertEqual(response.status_code, 302)
+        expected_url = '/accounts/google/login/?next=/create-project/'
+        self.assertTrue(
+            response.url.endswith(expected_url),
+            f"Expected URL to end with {expected_url}, got {response.url}"
+        )
