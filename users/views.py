@@ -31,69 +31,34 @@ def create_project(request):
         form = ProjectForm()
     return render(request, 'createproject.html', {'form': form})
 
-
-@login_required
-def join_private_project(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    
-    # Redirect if project is not private or user is already a member
-    if not project.is_private:
-        return redirect('join_project')
-    if request.user in project.collaborators.all() or project.user == request.user:
-        return redirect('join_project')
-    
-    if request.method == "POST":
-        password = request.POST.get('password')
-        if project.password == password:
-            project.collaborators.add(request.user)
-            project.save()
-            return redirect('common_default')
-        else:
-            return render(request, 'join_private_project.html', {
-                'project': project,
-                'error': 'Incorrect password'
-            })
-    
-    return render(request, 'join_private_project.html', {'project': project})
-
 @login_required
 def join_project(request):
     if request.method == "POST":
-        project_id = request.POST.get('project_id')
-        try:
-            project = Project.objects.get(id=project_id)
-            
-            if request.user in project.collaborators.all() or project.user == request.user:
-                return render(request, 'joinproject.html', {
-                    'projects': Project.objects.all().order_by('name'),
-                    'error': 'You are already part of this project.'
-                })
-            elif project.is_private:
-                return redirect('join_private_project', project_id=project.id)
-            else:
-                project.collaborators.add(request.user)
-                project.save()
-                return redirect('common_default')
+        form = JoinProjectForm(request.POST)
+        if form.is_valid():
+            project_name = form.cleaned_data['project_name']
+            try:
+                project = Project.objects.get(name=project_name)
                 
-        except Project.DoesNotExist:
-            return render(request, 'joinproject.html', {
-                'projects': Project.objects.all().order_by('name'),
-                'error': 'Project not found.'
-            })
-    
-    projects = Project.objects.all().order_by('name')
-    return render(request, 'joinproject.html', {'projects': projects})
-    
-    # GET request - show all projects
-    projects = Project.objects.all().order_by('name')
-    return render(request, 'joinproject.html', {'projects': projects})
+                if request.user in project.collaborators.all() or project.user == request.user:
+                    form.add_error('project_name', 'You are already part of this project.')
+                else:
+                    project.collaborators.add(request.user)
+                    project.save()
+                    return redirect('common_default')
+            except Project.DoesNotExist:
+                form.add_error('project_name', 'No project found with that name.')
+    else:
+        form = JoinProjectForm()
+
+    return render(request, 'joinproject.html', {'form': form})
 
 def audio_playback(request, file_id):
     audio_file = get_object_or_404(ProjectFiles, id=file_id)
     audio_url = audio_file.file.url
     
     # Get all comments for this audio file, ordered by timestamp
-    comments = Comment.objects.filter(project_file=audio_file).order_by('timestamp')
+    comments = Comment.objects.filter(file=audio_file).order_by('timestamp')
 
     context = {
         'audio': audio_file,
@@ -113,7 +78,7 @@ def add_comment(request, file_id):
         
         if text:  # Only create comment if there's actual text
             Comment.objects.create(
-                project_file=audio_file,  # Changed from file to project_file
+                file=audio_file,
                 timestamp=timestamp,
                 text=text,
                 user=request.user
@@ -126,10 +91,10 @@ def add_comment(request, file_id):
 @login_required
 def delete_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
-    file_id = comment.project_file.id  # Changed from file to project_file
+    file_id = comment.file.id  # Store the file_id before deleting the comment
     
     # Only allow the comment owner or project admin to delete
-    if request.user == comment.user or request.user == comment.project_file.project.user:
+    if request.user == comment.user or request.user == comment.file.project.user:
         comment.delete()
     
     return redirect('audio_playback', file_id=file_id)
