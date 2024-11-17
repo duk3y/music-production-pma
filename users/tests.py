@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 from users.models import Profile, Project
 from django.contrib import auth
 from urllib.parse import urlparse, parse_qs
+from django.conf import settings
+import os
 
 @override_settings(SITE_ID=1)  # Force SITE_ID to 1 during the test
 class GoogleOAuthRedirectionTestCase(TestCase):
@@ -16,7 +18,6 @@ class GoogleOAuthRedirectionTestCase(TestCase):
         # Create necessary directories if they don't exist
         os.makedirs(os.path.join(settings.BASE_DIR, 'static'), exist_ok=True)
         os.makedirs(os.path.join(settings.BASE_DIR, 'staticfiles'), exist_ok=True)
-
 
     def setUp(self):
         # Create a Site object to associate the SocialApp with
