@@ -7,7 +7,6 @@ urlpatterns = [
     path("", views.index, name="index"),
     path('create-project/', views.create_project, name='create_project'),
     path('join-project/', views.join_project, name='join_project'),
-    path('join-private-project/<int:project_id>/', views.join_private_project, name='join_private_project'),
     path('audio/<int:file_id>/add_comment/', views.add_comment, name='add_comment'),
     path('audio/<int:file_id>/', views.audio_playback, name='audio_playback'),
     path('files/<int:file_id>/edit/', views.edit_metadata, name='edit_metadata'),

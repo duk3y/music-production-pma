@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'users',
     'storages',
     'mysite',
-    'widget_tweaks',
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
