@@ -93,7 +93,7 @@ def audio_playback(request, file_id):
     audio_url = audio_file.file.url
     
     # Get all comments for this audio file, ordered by timestamp
-    comments = Comment.objects.filter(file=audio_file).order_by('timestamp')
+    comments = Comment.objects.filter(project_file=audio_file).order_by('timestamp')
 
     context = {
         'audio': audio_file,
@@ -113,7 +113,7 @@ def add_comment(request, file_id):
         
         if text:  # Only create comment if there's actual text
             Comment.objects.create(
-                file=audio_file,
+                project_file=audio_file,  # Changed from file to project_file
                 timestamp=timestamp,
                 text=text,
                 user=request.user
@@ -126,10 +126,10 @@ def add_comment(request, file_id):
 @login_required
 def delete_comment(request, comment_id):
     comment = get_object_or_404(Comment, id=comment_id)
-    file_id = comment.file.id  # Store the file_id before deleting the comment
+    file_id = comment.project_file.id  # Changed from file to project_file
     
     # Only allow the comment owner or project admin to delete
-    if request.user == comment.user or request.user == comment.file.project.user:
+    if request.user == comment.user or request.user == comment.project_file.project.user:
         comment.delete()
     
     return redirect('audio_playback', file_id=file_id)
