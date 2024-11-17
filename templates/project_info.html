@@ -50,6 +50,10 @@
             color: rgb(65, 65, 65);
             font-size: 14px;
         }
+        /* .btn-light {
+            background-color: #f8f9fa;
+            color: #000;
+        } */
         h1 {
             font-size: 2.5rem;
             font-weight: bold;
@@ -60,6 +64,7 @@
         .input-group input {
             height: 45px;
         }
+
     </style>
 </head>
 <body>
@@ -68,20 +73,17 @@
             <img src="{% static 'logo.png' %}" alt="Logo">
             <span>Music Manager</span>
         </div>
-        <div class="username">{{ username }}</div>
+        <div class="username">{{ username }}</div> 
     </header>
 
     <main class="container">
-        <h1 class="text-center">{{ project.name }} Files</h1>
-
-        <!-- Chat Room Button -->
-        <div class="button-container d-flex justify-content-between mb-3">
+        <h1 class="text-center">{{project.name}} Files</h1>
+        <div class="button-container" style="text-align: right">
             <a href="{% url 'file_upload' project.id %}" class="btn btn-secondary btn-light btn-sm">Upload a File</a>
-            <a href="{% url 'project_chat_room' project.id %}" class="btn btn-primary btn-sm">Go to Chat Room</a>
-        </div>
+        </div> 
 
         <ul class="nav nav-tabs">
-            <li class="nav-item" role='presentation'>
+            <li class="nav-item" role = 'presentation'>
               <a class="nav-link active" id='video-tab' data-bs-toggle="tab" aria-current="page" href="#video-files">Video Files</a>
             </li>
             <li class="nav-item">
@@ -119,6 +121,8 @@
                 <li class="page-item"><a class="page-link" href="#">10</a></li>
             </ul>
         </div>
+
+             
     </main>
 
     <footer>

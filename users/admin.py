@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, Project, ProjectFiles, Comment
+from .models import Profile, Project, ProjectFiles
 
 
 @admin.register(Profile)
@@ -13,5 +13,3 @@ class ProjectAdmin(admin.ModelAdmin):
 @admin.register(ProjectFiles)
 class PProjectFilesAdmin(admin.ModelAdmin):
     list_display = ('project', 'file', 'uploaded_by', 'created_at')
-
-admin.site.register(Comment)
