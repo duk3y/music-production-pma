@@ -1,20 +1,68 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create a Project</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <h1>Create a Project</h1>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Create Project</button>
-        </form>
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="text-center">Create a Project</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ form.name.label_tag }}
+                            {{ form.name|add_class:"form-control" }}
+                            {% if form.name.errors %}
+                                <div class="text-danger">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                {{ form.is_private|add_class:"form-check-input" }}
+                                {{ form.is_private.label_tag }}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 password-field" style="display: none;">
+                            {{ form.password.label_tag }}
+                            {{ form.password|add_class:"form-control" }}
+                            {% if form.password.errors %}
+                                <div class="text-danger">{{ form.password.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Create Project</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const privateCheckbox = document.querySelector('#id_is_private');
+    const passwordField = document.querySelector('.password-field');
+    
+    function togglePasswordField() {
+        passwordField.style.display = privateCheckbox.checked ? 'block' : 'none';
+    }
+    
+    privateCheckbox.addEventListener('change', togglePasswordField);
+    togglePasswordField(); // Initial state
+});
+</script>
+{% endblock %}
