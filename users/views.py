@@ -10,7 +10,7 @@ from django.urls import reverse
 from .models import ProjectFiles, Comment 
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, get_object_or_404
-from mysite.forms import UploadFileForm, CreateTaskForm
+from mysite.forms import UploadFileForm
 import json
 
 
@@ -19,16 +19,13 @@ def index(request):
 
 @login_required
 def create_project(request):
-    print(f'User in create_project outside post: {request.user}')
     if request.method == "POST":
-        print(f'User in create_project: {request.user}')
-        form = ProjectForm(request.POST, request_user=request.user)
+        form = ProjectForm(request.POST)
         if form.is_valid():
             project = form.save(commit=False)
             project.user = request.user
             project.save()
             form.save_m2m()
-            project.collaborators.add(request.user)
             return HttpResponseRedirect(reverse('common_default'))
     else:
         form = ProjectForm()
@@ -110,8 +107,7 @@ def edit_metadata(request, file_id):
         form = UploadFileForm(request.POST, instance=file_instance)
         if form.is_valid():
             form.save()
-            return redirect('project_files', project_id=file_instance.project.id)
+            return redirect('project_info', project_id=file_instance.project.id)
     else:
         form = UploadFileForm(instance=file_instance)
     return render(request, 'edit_metadata.html', {'form': form, 'file_instance': file_instance})
-

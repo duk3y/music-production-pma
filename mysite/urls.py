@@ -18,15 +18,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 from . import views
-from .views import CustomLoginView, user_tasks, project_files_view, updateTaskStatus, delete_task, TaskInfoView, CalendarView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView, upload_file, ProjectDetailView, login_redirect, ProjectTaskView, create_task
-
+from .views import CustomLoginView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView, upload_file, ProjectDetailView, login_redirect
 
 urlpatterns = [
-    path('projects/<int:project_id>/tasks/', ProjectTaskView, name='project_task_view'), 
-    path('projects/<int:project_id>/tasks/<int:task_id>/info/', TaskInfoView, name='task_info_view'),
-    path('projects/<int:project_id>/tasks/upload/', create_task, name = 'task_upload' ),
-    path('projects/<int:project_id>/upload/', upload_file, name='file_upload'),
-    path('projects/<int:project_id>/tasks/<int:task_id>/delete/', delete_task, name="task_delete"),
+    path('projects/<int:project_id>/upload/', upload_file, name='file_upload'),  
     path('file/delete/<int:file_id>/', views.delete_file, name='delete_file'),
     path('projects/<int:project_id>/edit/', views.edit_project, name='edit_project'),
     path("admin/", admin.site.urls),
@@ -35,13 +30,9 @@ urlpatterns = [
     path('google/', include('mysite.googleusers.urls'), name='google_login'),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('common/', CommonDefaultView.as_view(), name='common_default'),
-    path('calendar/', CalendarView, name="calendar_view"),
-    path('api/user_tasks/', user_tasks, name="user_tasks_calendar"),
-    path('api/status-update/', updateTaskStatus, name='update_task_status'),
     path('pmaadmin/', PMAAdminDefaultView.as_view(), name='pma_admin_default'),
     path("login-post", AuthenticationView, name="authentication_view"),
-    path('projects/<int:project_id>/files', project_files_view, name="project_files" ),
-    path('projects/<int:project_id>/', ProjectDetailView, name="project_info" ),
+    path('projects/<int:project_id>', ProjectDetailView, name="project_info" ),
     path('', include('users.urls')),  
     path('login-redirect/', login_redirect, name='login_redirect'),
     path('public-projects/', views.public_projects, name='public_projects'),

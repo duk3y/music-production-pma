@@ -1,15 +1,38 @@
 {% extends "base.html" %}
-{% load crispy_forms_tags %}
+
 {% block content %}
 <div class="container">
-    <div class="upload-section" style= "padding-top: 50px;">
+    <div class="upload-section" style="text-align:center; padding-top: 50px;">
         <h1>Upload Your Music Files</h1>
         <p>Organize and manage your music projects by uploading files below.</p>
 
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            {{form|crispy}}
-            <button type="submit" class="btn btn-primary mt-4">Upload</button>
+            
+            <div class="form-group mt-3">
+                <label for="id_title" style="color: white;">File Title</label>
+                {{ form.title }}
+            </div>
+
+            <div class="form-group mt-3">
+                <label for="id_description" style="color: white;">Description</label>
+                {{ form.description }}
+            </div>
+
+            <div class="form-group mt-3">
+                <label for="id_keywords" style="color: white;">Keywords</label>
+                {{ form.keywords }}
+                <small style="color: #ccc;">(Separate keywords with commas)</small>
+            </div>
+
+            <div class="form-group mt-3">
+                <label for="id_file" style="color: white;">Select File</label>
+                {{ form.file }}
+            </div>
+            
+            <button type="submit" class="btn btn-primary mt-4" style="background-color: #1DB954; border: none; width: 100%; padding: 10px;">
+                Upload
+            </button>
         </form>
     </div>
 </div>
