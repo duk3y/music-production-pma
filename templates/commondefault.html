@@ -1,13 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% block content %}
     <title>My Projects</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    {% block content %}
     <style>
         body {
             background-color: #1c1c1c;
@@ -70,12 +64,9 @@
             font-size: 1.3rem;
         }
     </style>
-</head>
 <body>
-
     <main class="container">
         <h1 class="text-center">My Projects</h1>
-
         <div class="search-container">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" placeholder="Search" aria-label="Search">
@@ -108,22 +99,17 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="d-flex justify-content-center">
-            <ul class="pagination">
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">...</a></li>
-                <li class="page-item"><a class="page-link" href="#">10</a></li>
-            </ul>
-        </div>
-
         <div class="button-container">
-            <a href="{% url 'create_project' %}" class="btn btn-light">Create a Project</a>
-            <a href="{% url 'join_project' %}" class="btn btn-light">Join a Project</a>  <!-- Updated link -->
-        </div>     
+            <form action="{% url 'create_project' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-light"> Create a Project </button>
+            </form>
+            <form action="{% url 'join_project' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-light"> Join a Project </button>
+            </form>  
+        </div>
     </main>
     {% endblock %}   
 </body>
-</html>
+

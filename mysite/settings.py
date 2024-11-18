@@ -55,13 +55,15 @@ INSTALLED_APPS = [
     'users',
     'storages',
     'mysite',
+    'crispy_forms',
+    'crispy_bootstrap5'
 ]
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         "SCOPE":[
             'profile',
-            'email'
+            'email',
         ],
         "AUTH_PARAMS": {"access_type": "online"}
     }
@@ -97,6 +99,9 @@ TEMPLATES = [
         },
     },
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5" 
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
@@ -181,6 +186,9 @@ else:
     # Static files (CSS, JavaScript, Images)
     # https://docs.djangoproject.com/en/5.1/howto/static-files/
     # SHERRIFF: Added the static_root variable here to fix an erorr with static files not being found
+    STATICFILES_DIRS = [
+        BASE_DIR / 'static'
+    ]
     STATIC_URL = '/static/'
     STATIC_ROOT = BASE_DIR / "staticfiles"
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
