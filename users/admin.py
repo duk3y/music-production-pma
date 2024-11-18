@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile, Project, ProjectFiles
+from .models import Profile, Project, ProjectFiles, Task
 
 
 @admin.register(Profile)
@@ -13,3 +13,7 @@ class ProjectAdmin(admin.ModelAdmin):
 @admin.register(ProjectFiles)
 class PProjectFilesAdmin(admin.ModelAdmin):
     list_display = ('project', 'file', 'uploaded_by', 'created_at')
+
+@admin.register(Task)
+class TasksAdmin(admin.ModelAdmin):
+    list_display = ('project','status','deadline')

@@ -10,6 +10,7 @@ class Project(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     collaborators = models.ManyToManyField(User, related_name='collaborating_projects', blank=True)  
+    description = models.TextField(blank=True, null=True)
 
 class ProjectFiles(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -32,3 +33,13 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.timestamp}s: {self.text[:20]}"
+    
+class Task(models.Model):
+    status_options = [('to do','To Do'),('in progress','In Progress'),('waiting approval', 'Waiting Approval'),('done','Done')]
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name = "project_tasks")
+    name = models.TextField(max_length=30, blank=False, null=False, default="Default Value")
+    status = models.TextField(choices=status_options, default='to do', null=False)
+    description = models.TextField(blank=True, null=True)
+    deadline = models.DateTimeField()
+    assignees = models.ManyToManyField(User, related_name = 'assignees', blank=False)
+    created_at = models.DateTimeField(auto_now_add=True)

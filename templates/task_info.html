@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% load crispy_forms_tags %}
+    <style>
+        body {
+            background-color: #1c1c1c;
+            color: #ffffff;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .task-description{
+            display: flex;
+            height: 100%;
+            width: 60%;
+            justify-content:center;
+            align-items: left;
+            color: black;
+            flex-direction: column;
+            margin: 0 auto;
+            border-radius: 2rem;
+            flex-grow: 1;
+        }
+        .task-description h1{
+            font-size: 1.7rem;
+            color: white;
+            display: block;
+            margin-bottom: 1%;
+        }
+        .task-description h2{
+            font-size: 1rem;
+            color: white;
+            display: block;
+            display: flex;
+            /* flex-grow: 1; */
+        }
+        .task-description ul{
+            color: white;
+        }
+        .container-project-button a{
+            text-decoration: none;
+            color: inherit;
+            position: absolute;
+            left: 0;
+            align-items: center;
+
+        }
+        .container-header{
+            padding: 5px;
+            display: flex;
+            position: relative;
+            justify-content:center;
+            align-items: center;
+            margin-bottom: 2%;
+        }
+        .button-container{
+            position: absolute;
+            right: 0;
+        }
+        .button-container-l{
+            position: absolute;
+            left: 0;
+        }
+        
+    </style>
+    <!-- <script>
+        console.log()
+    </script> -->
+<body>
+    <main class="task-full-container">
+
+        <div class="container-header"> 
+            <div class="button-container-l" style="text-align: left">
+                <a href="{% url 'project_task_view' project.id %}" class="btn btn-secondary btn-light btn-sm"> <i class="fa fa-arrow-left"></i> Tasks</a>
+            </div> 
+            <h1 class="text-center"> {{task.name}}</h1>
+            <div class="button-container" style="text-align: left">
+                <a href="{% url 'task_delete' project.id task.id %}" class="btn btn-secondary btn-light btn-sm"> <i class="fa fa-trash" style="color:#1c1c1c;"></i></a>
+            </div> 
+        </div>
+        <div class="task-description">
+            <h1>Status: </h1>
+            <h2 style="margin-bottom: 5%">{{ task.status}}</h2>
+            <h1>Description:</h1>
+            <h2 style="margin-bottom: 5%" >{{task.description}}</h2>
+            <h1>Deadline: </h1>
+            <h2 style="margin-bottom: 5%" >{{ task.deadline|date:"M j, Y, g:i A"}}</h2>
+            <h1>Assignees: </h1>
+            <ul>
+                {% for assignee in task.assignees.all %}
+                    <li><h2>{{assignee}}</h2></li>
+                {% endfor %}
+            </ul>
+            
+        </div>
+    </main>
+    {% endblock %}   
+<!--     
+
+    <footer>
+        <p>Created by: Computing ids</p>
+        <p>&copy; CS 3240</p>
+    </footer> -->
+</body>
