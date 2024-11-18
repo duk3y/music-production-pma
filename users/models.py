@@ -11,6 +11,7 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     collaborators = models.ManyToManyField(User, related_name='collaborating_projects', blank=True)  
     description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     is_private = models.BooleanField(default=False)
 
 class ProjectFiles(models.Model):

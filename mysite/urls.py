@@ -29,6 +29,7 @@ urlpatterns = [
     path('projects/<int:project_id>/tasks/<int:task_id>/delete/', delete_task, name="task_delete"),
     path('file/delete/<int:file_id>/', views.delete_file, name='delete_file'),
     path('projects/<int:project_id>/edit/', views.edit_project, name='edit_project'),
+    path('projects/<int:project_id>/manage_files/', views.manage_files, name='manage_files'),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path('', views.home, name='home'),
