@@ -8,6 +8,9 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center">{{ project.name }} Files</h1>
+    <div class="mt-4">
+        <a href="{% url 'project_info' project.id %}" class="btn btn-primary">Back to Project Info</a>
+    </div>
     <div class="button-container" style="text-align: right">
         <a href="{% url 'file_upload' project.id %}" class="btn btn-secondary btn-light btn-sm">Upload a File</a>
     </div>
