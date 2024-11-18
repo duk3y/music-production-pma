@@ -5,8 +5,26 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center mb-4">Public Projects</h1>
+    
     <div class="row">
-        
+        {% for project in public_projects %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ project.name }}</h5>
+                    <p class="card-text">Last Modified: {{ project.last_modified|date:"F j, Y, g:i a" }}</p>
+                    <p class="card-text">{{ project.description }}</p>
+                    <a href="{{ project.get_absolute_url }}" class="btn btn-primary">View Project</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
+    {% if user.is_authenticated %}
+    <div class="mt-4 text-right">
+        <a href="{% url 'common_default' %}" class="btn btn-secondary">Your Projects</a>
+    </div>
+    {% endif %}
+    
 </div>
 {% endblock %}
