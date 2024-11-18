@@ -22,6 +22,7 @@ from .views import CustomLoginView, CommonDefaultView, PMAAdminDefaultView, Auth
 
 urlpatterns = [
     path('projects/<int:project_id>/upload/', upload_file, name='file_upload'),  
+    path('file/delete/<int:file_id>/', views.delete_file, name='delete_file'),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path('', views.home, name='home'),

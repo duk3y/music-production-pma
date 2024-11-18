@@ -1,133 +1,114 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Projects</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-    <style>
-        body {
-            background-color: #1c1c1c;
-            color: #ffffff;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        header {
-            background-color: black;
-            padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        header img {
-            height: 40px;
-        }
-        header span {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        header .username {
-            border: 1px solid #fff;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        main {
-            flex-grow: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        footer {
-            background-color: black;
-            padding: 10px 0;
-            text-align: center;
-            color: rgb(65, 65, 65);
-            font-size: 14px;
-        }
-        /* .btn-light {
-            background-color: #f8f9fa;
-            color: #000;
-        } */
-        h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        .input-group input {
-            height: 45px;
-        }
+{% extends 'base.html' %}
 
-    </style>
-</head>
-<body>
-    <header>
-        <div>
-            <img src="{% static 'logo.png' %}" alt="Logo">
-            <span>Music Manager</span>
+{% block title %}
+  {{ project.name }} - Project Homepage
+{% endblock %}
+
+{% block content %}
+  <div class="container-fluid" style="height: 100%;">
+    <div class="row">
+      <!-- Project Overview Section -->
+      <div class="col-md-12 px-4">
+        <div class="text-center my-4 p-4">
+          <h1>{{ project.name }}</h1>
         </div>
-        <div class="username">{{ username }}</div> 
-    </header>
+      </div>
 
-    <main class="container">
-        <h1 class="text-center">{{project.name}} Files</h1>
-        <div class="button-container" style="text-align: right">
-            <a href="{% url 'file_upload' project.id %}" class="btn btn-secondary btn-light btn-sm">Upload a File</a>
-        </div> 
+      <!-- File Management Section (Left) -->
+      <div class="col-md-6 d-flex align-items-center px-4">
+        <div class="table-responsive w-100">
+          <h2>{{ project.name }} Files</h2>
+          <table class="table table-dark table-striped">
+            <thead>
+              <tr>
+                <th>File Name</th>
+                <th>Uploaded By</th>
+                <th>Uploaded Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for file in project.projectfiles_set.all %}
+                  <tr>
+                    <td><a href="{{ file.file.url }}" target="_blank">{{ file.title }}</a></td>
+                    <td>{{ file.uploaded_by }}</td>
+                    <td>{{ file.created_at }}</td>
+                    <td>
+                      <form method="post" action="{% url 'delete_file' file.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="5" class="text-center">No files found.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+          </table>
 
-        <ul class="nav nav-tabs">
-            <li class="nav-item" role = 'presentation'>
-              <a class="nav-link active" id='video-tab' data-bs-toggle="tab" aria-current="page" href="#video-files">Video Files</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id='image-files-tab' data-bs-toggle="tab" href="#image-files">Image Files</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id='text-files-tab' data-bs-toggle="tab" href="#text-files">Text Files</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="audio-files-tab" data-bs-toggle="tab" href="#audio-files">Audio Files</a>
-            </li>
-        </ul>
+          <!-- Add Files Button -->
+          <div class="text-center mt-3">
+            <a href="{% url 'file_upload' project.id %}" class="btn btn-primary">Add Files</a>
+          </div>
+        </div>
+      </div>
 
-        <div class="tab-content mt-3">
-            <div class="tab-pane fade show active" id="video-files">
-                {% include 'filepreviews/showvideofiles.html' %}
-            </div>
-            <div class="tab-pane fade" id="image-files">
-                {% include 'filepreviews/showimagefiles.html' %}
-            </div>
-            <div class="tab-pane fade" id="text-files">
-                {% include 'filepreviews/showtextfiles.html' %}
-            </div>
-            <div class="tab-pane fade" id="audio-files">
-                {% include 'filepreviews/showaudiofiles.html' %}
-            </div>
+      <!-- Right Section with Project Deadlines and Progress Tracking -->
+      <div class="col-md-6 px-4">
+        <!-- Project Deadlines Section -->
+        <div class="text-center mb-4 px-4">
+          <h2>Project Deadlines</h2>
+          <ul class="list-group">
+            {% for deadline in project.deadlines %}
+              <li class="list-group-item bg-dark text-light">{{ deadline.name }} - Due: {{ deadline.due_date }}</li>
+            {% empty %}
+              <li class="list-group-item bg-dark text-light text-center">No deadlines set.</li>
+            {% endfor %}
+          </ul>
         </div>
 
-        <div class="d-flex justify-content-center">
-            <ul class="pagination">
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">...</a></li>
-                <li class="page-item"><a class="page-link" href="#">10</a></li>
-            </ul>
+        <!-- Progress Tracking Section -->
+        <div class="text-center px-4">
+          <h2>Progress Tracking</h2>
+          <ul class="list-group">
+            {% for milestone in project.milestones %}
+              <li class="list-group-item bg-dark text-light">{{ milestone.name }} - Status: {{ milestone.status }}</li>
+            {% empty %}
+              <li class="list-group-item bg-dark text-light text-center">No milestones set.</li>
+            {% endfor %}
+          </ul>
         </div>
+      </div>
+    </div>
 
-             
-    </main>
-
-    <footer>
-        <p>Created by: Computing ids</p>
-        <p>&copy; CS 3240</p>
-    </footer>
-</body>
-</html>
+    <!-- Discussion and Comments Section -->
+    <div class="row mt-4">
+      <div class="col-md-12 p-4">
+        <div class="text-center p-4">
+          <h2>Discussion and Comments</h2>
+          <div class="comment-section bg-dark p-3">
+            {% for comment in project.comments %}
+              <div class="comment my-2">
+                <p>
+                  <strong>{{ comment.user }}:</strong> {{ comment.text }}
+                </p>
+                <small class="text-muted">Posted on: {{ comment.date }}</small>
+              </div>
+            {% empty %}
+              <p class="text-center">No comments yet. Be the first to start the discussion!</p>
+            {% endfor %}
+            <form method="post" action="{% url 'add_comment' project.id %}">
+              {% csrf_token %}
+              <div class="input-group mt-3">
+                <input type="text" name="comment" class="form-control" placeholder="Add a comment..." />
+                <button type="submit" class="btn btn-light">Post</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
