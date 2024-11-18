@@ -34,6 +34,10 @@ def delete_file(request, file_id):
     # Redirect to the project information page after deletion
     return redirect('project_info', project_id=file.project.id)
 
+def manage_files(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    context = {'project': project}
+    return render(request, 'manage_files.html', context)
 
 
 def home(request):

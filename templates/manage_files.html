@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  Manage Files - {{ project.name }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center">{{ project.name }} Files</h1>
+    <div class="button-container" style="text-align: right">
+        <a href="{% url 'file_upload' project.id %}" class="btn btn-secondary btn-light btn-sm">Upload a File</a>
+    </div>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="video-tab" data-bs-toggle="tab" aria-current="page" href="#video-files">Video Files</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="image-files-tab" data-bs-toggle="tab" href="#image-files">Image Files</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="text-files-tab" data-bs-toggle="tab" href="#text-files">Text Files</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="audio-files-tab" data-bs-toggle="tab" href="#audio-files">Audio Files</a>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-3">
+        <div class="tab-pane fade show active" id="video-files">
+            {% include 'filepreviews/showvideofiles.html' %}
+        </div>
+        <div class="tab-pane fade" id="image-files">
+            {% include 'filepreviews/showimagefiles.html' %}
+        </div>
+        <div class="tab-pane fade" id="text-files">
+            {% include 'filepreviews/showtextfiles.html' %}
+        </div>
+        <div class="tab-pane fade" id="audio-files">
+            {% include 'filepreviews/showaudiofiles.html' %}
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">...</a></li>
+            <li class="page-item"><a class="page-link" href="#">10</a></li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
