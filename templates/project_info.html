@@ -7,13 +7,17 @@
 {% block content %}
   <div class="container-fluid" style="height: 100%;">
     <div class="row">
-      <div class="row align-items-center">
-        <!-- Back to My Projects Button -->
-        <div class="col-auto p-3">
+      <div class="container-fluid" style="height: 100%;">
+        <div class="d-flex justify-content-between align-items-center pt-3 mb-3">
+          <!-- Back to My Projects Button -->
           <a href="{% url 'common_default' %}" class="btn btn-secondary">Back to My Projects</a>
+
+          {% if not project.is_private %}
+            <a href="{% url 'edit_project' project.id %}" class="btn btn-primary">Edit Project</a>
+          {% endif %}
         </div>
-        <!-- Project Title -->
-        <div class="col-md-12 pb-3 text-center">
+
+        <div class="text-center">
           <h1 class="mb-0">{{ project.name }}</h1>
         </div>
       </div>

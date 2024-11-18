@@ -117,4 +117,17 @@ def login_redirect(request):
         return redirect('pma_admin_default')
     else:
         return redirect('common_default')
+    
+@login_required
+def edit_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    if request.method == 'POST':
+        # Update the project details
+        project.name = request.POST.get('name')
+        project.description = request.POST.get('description')
+        project.save()
+        return redirect('project_info', project_id=project.id)
+    
+    # Render the edit form
+    return render(request, 'edit_project.html', {'project': project})
 
