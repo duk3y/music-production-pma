@@ -25,11 +25,6 @@ class GoogleOAuthRedirectionTestCase(TestCase):
         os.makedirs(os.path.join(settings.BASE_DIR, 'static'), exist_ok=True)
         os.makedirs(os.path.join(settings.BASE_DIR, 'staticfiles'), exist_ok=True)
         
-        # Create a dummy logo.png if it doesn't exist
-        logo_path = os.path.join(settings.BASE_DIR, 'static', 'logo.png')
-        if not os.path.exists(logo_path):
-            with open(logo_path, 'wb') as f:
-                f.write(b'dummy content')
 
     def setUp(self):
         # Create a Site object to associate the SocialApp with
