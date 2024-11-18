@@ -12,9 +12,8 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">{{ project.name }}</h5>
-                    <p class="card-text">Last Modified: {{ project.last_modified|date:"F j, Y, g:i a" }}</p>
                     <p class="card-text">{{ project.description }}</p>
-                    <a href="{{ project.get_absolute_url }}" class="btn btn-primary">View Project</a>
+                    <a href="{{ project.get_absolute_url }}" class="btn btn-primary">View Description</a>
                 </div>
             </div>
         </div>
