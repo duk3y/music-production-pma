@@ -14,9 +14,4 @@ class Migration(migrations.Migration):
             model_name='task',
             name='uploaded_by',
         ),
-        migrations.AddField(
-            model_name='project',
-            name='description',
-            field=models.TextField(blank=True, null=True),
-        ),
     ]
