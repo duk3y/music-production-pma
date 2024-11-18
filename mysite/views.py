@@ -26,6 +26,19 @@ def upload_file(request, project_id):
         form = UploadFileForm()
     return render(request, "upload.html", {"form": form, "project": project})
 
+@login_required
+def delete_file(request, file_id):
+    file = get_object_or_404(ProjectFiles, id=file_id)
+    file.delete()
+    
+    # Redirect to the project information page after deletion
+    return redirect('project_info', project_id=file.project.id)
+
+def manage_files(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    context = {'project': project}
+    return render(request, 'manage_files.html', context)
+
 
 def home(request):
     return render(request, 'home.html')
