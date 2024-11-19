@@ -12,11 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='project',
-            name='description',
-            field=models.TextField(blank=True, null=True),
-        ),
-        migrations.AddField(
-            model_name='project',
             name='is_private',
             field=models.BooleanField(default=False),
         ),
