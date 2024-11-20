@@ -31,13 +31,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'music-production-pm-app-da1846f20d32.herokuapp.com']
 
-SITE_ID = 2
+
 
 # # Application definition
-# if 'TEST' in os.environ:
-#     SITE_ID = 1  # Use a static SITE_ID during tests
-# else:
-#     SITE_ID = os.getenv('SITE_ID')  # Use the environment variable for production
+if 'TEST' in os.environ:
+    SITE_ID = 1  # Use a static SITE_ID during tests
+else:
+   SITE_ID = 2  # Use the environment variable for production
 
 INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
