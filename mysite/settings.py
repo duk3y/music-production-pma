@@ -30,7 +30,8 @@ SECRET_KEY = 'django-insecure-pgll1_1yhzl%*^vhpcj%ov!xdxb^vkr43@mkf)_p($)o^v2#r*
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'music-production-pm-app-da1846f20d32.herokuapp.com']
-SITE_ID = 1
+
+SITE_ID = os.getenv('SITE_ID')
 
 # # Application definition
 # if 'TEST' in os.environ:
