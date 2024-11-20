@@ -7,7 +7,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('users', '0009_remove_comment_project_comment_file'),
-        ('users', '0012_task_name'),
+        ('users', '0013_task_name'),
     ]
 
     operations = [
