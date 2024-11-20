@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'music-production-pm-app-da1846f20d32.herokuapp.com']
 
-SITE_ID = os.getenv('SITE_ID')
+SITE_ID = 2
 
 # # Application definition
 # if 'TEST' in os.environ:
