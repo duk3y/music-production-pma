@@ -1,38 +1,107 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
-<div class="container mt-5">
+
+<style>
+    body {
+        background-color: #1c1c1c;
+        color: #ffffff;
+    }
+    .container-card {
+        background-color: #2c2c2c;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .card-title {
+        color: #ffffff;
+        font-size: 2rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .project-name {
+        color: #ffffff;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .creator-info {
+        color: #cccccc;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+    .form-label {
+        color: #ffffff;
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    .form-control {
+        background-color: #3c3c3c;
+        border: 1px solid #4c4c4c;
+        color: #ffffff;
+        padding: 0.75rem;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+    .form-control:focus {
+        background-color: #3c3c3c;
+        border-color: #5c5c5c;
+        color: #ffffff;
+        box-shadow: 0 0 0 2px rgba(62, 184, 255, 0.2);
+    }
+    .btn-primary {
+        background-color: #3e8ef7;
+        border: none;
+        padding: 0.75rem;
+        font-size: 1.2rem;
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        padding: 0.75rem;
+        font-size: 1.2rem;
+        width: 100%;
+    }
+    .alert-danger {
+        background-color: #dc3545;
+        color: #ffffff;
+        border: none;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="text-center">Join Private Project</h2>
-                </div>
-                <div class="card-body">
-                    <h4 class="mb-4">{{ project.name }}</h4> 
-                    <p>Created by: {{ project.user.username }}</p>
-                    
-                    {% if error %}
-                        <div class="alert alert-danger">
-                            {{ error }}
-                        </div>
-                    {% endif %}
+            <div class="container-card">
+                <h2 class="card-title">Join Private Project</h2>
+                
+                <h3 class="project-name">{{ project.name }}</h3>
+                <p class="creator-info">Created by: {{ project.user.username }}</p>
 
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Project Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Join Project</button>
-                            <a href="{% url 'join_project' %}" class="btn btn-secondary">Cancel</a>
-                        </div>
-                    </form>
+                {% if error %}
+                <div class="alert alert-danger">
+                    {{ error }}
                 </div>
+                {% endif %}
+
+                <form method="POST" action="{% url 'join_private_project' project.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Project Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Join Project</button>
+                    <a href="{% url 'join_project_list' %}" class="btn btn-secondary">Cancel</a>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}

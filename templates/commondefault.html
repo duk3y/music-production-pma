@@ -104,7 +104,7 @@
                 {% csrf_token %}
                 <button type="submit" class="btn btn-light"> Create a Project </button>
             </form>
-            <form action="{% url 'join_project' %}" method="post">
+            <form action="{% url 'join_project_list' %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-light"> Join a Project </button>
             </form>  
@@ -112,4 +112,3 @@
     </main>
     {% endblock %}   
 </body>
-
