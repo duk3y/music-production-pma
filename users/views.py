@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 # Create your views here.
 from django.http import HttpResponse
@@ -13,49 +13,86 @@ from django.shortcuts import render, get_object_or_404
 from mysite.forms import UploadFileForm, CreateTaskForm
 import json
 from django.template.defaultfilters import register
+from django.contrib import messages
+from django.db.models import Q
 
 
 def index(request):
     return HttpResponse("Welcome to the homepage!")
 
+def public_projects(request):
+    # View for listing public projects
+    public_projects = Project.objects.filter(is_private=False)
+    return render(request, 'public_projects.html', {'public_projects': public_projects})
+
 @login_required
 def create_project(request):
-    print(f'User in create_project outside post: {request.user}')
     if request.method == "POST":
-        print(f'User in create_project: {request.user}')
-        form = ProjectForm(request.POST, request_user=request.user)
+        form = ProjectForm(request.POST)
         if form.is_valid():
             project = form.save(commit=False)
             project.user = request.user
             project.save()
             form.save_m2m()
-            project.collaborators.add(request.user)
             return HttpResponseRedirect(reverse('common_default'))
     else:
         form = ProjectForm()
     return render(request, 'createproject.html', {'form': form})
 
 @login_required
-def join_project(request):
-    if request.method == "POST":
-        form = JoinProjectForm(request.POST)
-        if form.is_valid():
-            project_name = form.cleaned_data['project_name']
-            try:
-                project = Project.objects.get(name=project_name)
-                
-                if request.user in project.collaborators.all() or project.user == request.user:
-                    form.add_error('project_name', 'You are already part of this project.')
-                else:
-                    project.collaborators.add(request.user)
-                    project.save()
-                    return redirect('common_default')
-            except Project.DoesNotExist:
-                form.add_error('project_name', 'No project found with that name.')
-    else:
-        form = JoinProjectForm()
+def join_project_list(request):
+    # Show list of all projects available to join
+    projects = Project.objects.exclude(
+        Q(user=request.user) | Q(collaborators=request.user)
+    ).distinct()
+    return render(request, 'join_project_list.html', {'projects': projects})
 
-    return render(request, 'joinproject.html', {'form': form})
+@login_required
+def join_project(request, project_id=None):
+    if project_id:
+        project = get_object_or_404(Project, id=project_id)
+        
+        # Check if user is already part of the project
+        if request.user in project.collaborators.all() or project.user == request.user:
+            messages.warning(request, 'You are already part of this project.')
+            return redirect('common_default')
+        
+        # Only allow joining public projects through this view
+        if project.is_private:
+            return redirect('join_private_project', project_id=project_id)
+        
+        # Add user to public project
+        project.collaborators.add(request.user)
+        project.save()
+        messages.success(request, f'Successfully joined {project.name}!')
+        return redirect('common_default')
+    
+    # Display list of available projects
+    projects = Project.objects.exclude(
+        Q(user=request.user) | Q(collaborators=request.user)
+    ).distinct()
+    
+    return render(request, 'joinproject.html', {'projects': projects})
+
+@login_required
+def join_private_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    error = None
+    
+    if request.method == "POST":
+        password = request.POST.get('password')
+        if password == project.password:
+            project.collaborators.add(request.user)
+            project.save()
+            messages.success(request, f'Successfully joined {project.name}!')
+            return redirect('common_default')
+        else:
+            error = "Incorrect password"
+
+    return render(request, 'join_private_project.html', {
+        'project': project,
+        'error': error
+    })
 
 def audio_playback(request, file_id):
     print(f"Accessing audio_playback with file_id: {file_id}")  

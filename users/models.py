@@ -7,11 +7,15 @@ class Profile(models.Model):
 
 class Project(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    description = models.TextField(blank=True, null=True)  
     last_modified = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    collaborators = models.ManyToManyField(User, related_name='collaborating_projects', blank=True)  
-    description = models.TextField(blank=True, null=True)
-    is_private = models.BooleanField(default=False)
+    collaborators = models.ManyToManyField(User, related_name='collaborating_projects', blank=True)
+    is_private = models.BooleanField(default=False)  
+    password = models.CharField(max_length=128, blank=True, null=True)  
+
+    def __str__(self):
+        return self.name
 
 class ProjectFiles(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
