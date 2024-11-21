@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, get_object_or_404
 from mysite.forms import UploadFileForm, CreateTaskForm
 import json
+from django.template.defaultfilters import register
 
 
 def index(request):
@@ -57,12 +58,12 @@ def join_project(request):
     return render(request, 'joinproject.html', {'form': form})
 
 def audio_playback(request, file_id):
+    print(f"Accessing audio_playback with file_id: {file_id}")  
     audio_file = get_object_or_404(ProjectFiles, id=file_id)
     audio_url = audio_file.file.url
     
-    # Get all comments for this audio file, ordered by timestamp
     comments = Comment.objects.filter(file=audio_file).order_by('timestamp')
-
+    
     context = {
         'audio': audio_file,
         'audio_url': audio_url,
@@ -114,4 +115,45 @@ def edit_metadata(request, file_id):
     else:
         form = UploadFileForm(instance=file_instance)
     return render(request, 'edit_metadata.html', {'form': form, 'file_instance': file_instance})
+
+@login_required
+def upload_file(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            file_instance = form.save(commit=False)
+            file_instance.project = project
+            file_instance.uploaded_by = request.user
+            file_instance.save()
+            
+            # Check if audio file and redirect
+            file_ext = file_instance.file.name.split('.')[-1].lower()
+            if file_ext in ['mp3', 'wav', 'ogg', 'm4a']:
+                return redirect('audio_playback', file_id=file_instance.id)
+            
+            return redirect('project_files', project_id=project_id)
+    else:
+        form = UploadFileForm()
+    return render(request, 'upload.html', {'form': form})
+
+@login_required
+def project_files(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    
+    # Filter for audio files based on file extension
+    audio_files = ProjectFiles.objects.filter(
+        project=project,
+        file__endswith=('.mp3', '.wav', '.ogg', '.m4a')
+    )
+    
+    context = {
+        'project': project,
+        'audio_files': audio_files,
+    }
+    return render(request, 'project_files.html', context)
+
+@register.filter
+def endswith(value, arg):
+    return value.endswith(arg)
 
