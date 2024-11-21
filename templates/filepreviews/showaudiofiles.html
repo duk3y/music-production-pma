@@ -1,24 +1,24 @@
 <div>
     <h3>Audio Files</h3>
     {% if audio_files %}
-        <ul>
-            {% for file in audio_files %}
-                <li>
-                    <!-- Link the file title to its playback page -->
-                    <h4>
-                        <a href="{% url 'audio_playback' file.id %}">{{ file.title }}</a>
-                    </h4>
-                    
-                    <!-- Additional Metadata and Actions -->
-                    <p><strong>Uploaded By:</strong> {{ file.uploaded_by }}</p>
-                    <p><strong>Uploaded On:</strong> {{ file.created_at|date:"Y-m-d H:i" }}</p>
-                    <p><strong>Description:</strong> {{ file.description }}</p>
-                    <p><strong>Keywords:</strong> {{ file.keywords }}</p>
-                    
-                    <a href="{% url 'edit_metadata' file.id %}" class="btn btn-secondary btn-sm mt-2">Edit Metadata</a>
-                </li>
-            {% endfor %}
-        </ul>
+        {% for file in audio_files %}
+            <div class="audio-file">
+                <h4>
+                    <a href="{% url 'audio_playback' file_id=file.id %}">
+                        {{ file.title }}
+                    </a>
+                </h4>
+                
+                <p><strong>Uploaded By:</strong> {{ file.uploaded_by }}</p>
+                <p><strong>Uploaded On:</strong> {{ file.created_at|date:"Y-m-d H:i" }}</p>
+                <p><strong>Description:</strong> {{ file.description }}</p>
+                <p><strong>Keywords:</strong> {{ file.keywords }}</p>
+                
+                <a href="{% url 'edit_metadata' file.id %}" class="btn btn-secondary btn-sm mt-2">
+                    Edit Metadata
+                </a>
+            </div>
+        {% endfor %}
     {% else %}
         <p>No audio files uploaded.</p>
     {% endif %}
