@@ -41,7 +41,7 @@ urlpatterns = [
     path('api/status-update/', updateTaskStatus, name='update_task_status'),
     path('pmaadmin/', PMAAdminDefaultView.as_view(), name='pma_admin_default'),
     path("login-post", AuthenticationView, name="authentication_view"),
-    path('projects/<int:project_id>/files', project_files_view, name="project_files" ),
+    path('projects/<int:project_id>/manage-files', project_files_view, name="manage_project_files" ),
     path('projects/<int:project_id>/', ProjectDetailView, name="project_info" ),
     path('', include('users.urls')),  
     path('login-redirect/', login_redirect, name='login_redirect'),
