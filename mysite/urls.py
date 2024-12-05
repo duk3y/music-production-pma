@@ -46,6 +46,10 @@ urlpatterns = [
     path('', include('users.urls')),  
     path('login-redirect/', login_redirect, name='login_redirect'),
     path('public-projects/', views.public_projects, name='public_projects'),
+    path('projects/<int:project_id>/add_comment/', views.add_project_comment, name='add_project_comment'),
+    path('projects/comment/<int:comment_id>/resolve/', views.resolve_discussion_comment, name='resolve_discussion_comment'),
+
+
 ]
 """# uncomment these lines if you want to test during development, not needed during production (heroku)
 from django.conf import settings
