@@ -1,0 +1,45 @@
+{# manage_join_requests.html #}
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Join Requests for {{ project.name }}</h2>
+    
+    {% if pending_requests %}
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Requested At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in pending_requests %}
+                        <tr>
+                            <td>{{ request.user.username }}</td>
+                            <td>{{ request.requested_at|date:"M d, Y H:i" }}</td>
+                            <td>
+                                <form method="post" action="{% url 'handle_join_request' request.id 'approve' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form method="post" action="{% url 'handle_join_request' request.id 'reject' %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-center">No pending join requests.</p>
+    {% endif %}
+    
+    <div class="text-center mt-4">
+        <a href="{% url 'project_info' project.id %}" class="btn btn-secondary">Back to Project</a>
+    </div>
+</div>
+{% endblock %}

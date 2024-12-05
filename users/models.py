@@ -12,7 +12,7 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     collaborators = models.ManyToManyField(User, related_name='collaborating_projects', blank=True)
     is_private = models.BooleanField(default=False)  
-    password = models.CharField(max_length=128, blank=True, null=True)  
+    password = models.CharField(max_length=128, blank=True, null=True) 
 
     def __str__(self):
         return self.name
@@ -57,3 +57,19 @@ class DiscussionComment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user.username} on {self.project.name}: {self.text[:20]}"
+    
+class ProjectJoinRequest(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='join_requests')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected')
+    ], default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('project', 'user')  # Prevents duplicate requests
+        
+    def __str__(self):
+        return f"{self.user.username} -> {self.project.name} ({self.status})"
