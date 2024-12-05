@@ -117,7 +117,11 @@
                         {% for file in project.projectfiles_set.all %}
                         <tr>
                             <td>
-                                <a href="{{ file.file.url }}" target="_blank">{{ file.title }}</a>
+                                {% if file.file.name|lower|endswith:'.mp3' or file.file.name|lower|endswith:'.wav' %}
+                                    <a href="{% url 'audio_playback' file_id=file.id %}">{{ file.title }}</a>
+                                {% else %}
+                                    <a href="{{ file.file.url }}" target="_blank">{{ file.title }}</a>
+                                {% endif %}
                             </td>
                             <td>{{ file.uploaded_by }}</td>
                             <td>{{ file.created_at|date:"M d, Y, g:i a" }}</td>
