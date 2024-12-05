@@ -55,14 +55,23 @@ def join_project_list(request):
     except Profile.DoesNotExist:
         return HttpResponseForbidden("You do not have permission to perform this action.")
 
-    projects = Project.objects.exclude(
+    available_projects = Project.objects.exclude(
         Q(user=request.user) | Q(collaborators=request.user)
     ).distinct()
-    return render(request, 'join_project_list.html', {'projects': projects})
+    
+    # Add pending request status for each project
+    for project in available_projects:
+        project.has_pending_request = ProjectJoinRequest.objects.filter(
+            project=project,
+            user=request.user,
+            status='pending'
+        ).exists()
+    
+    return render(request, 'joinproject.html', {'projects': available_projects})
 
 
 @login_required
-def join_project(request, project_id=None):
+def join_project(request, project_id):
     try:
         profile = Profile.objects.get(user=request.user)
         if profile.pmaStatus:
@@ -70,28 +79,21 @@ def join_project(request, project_id=None):
     except Profile.DoesNotExist:
         return HttpResponseForbidden("You do not have permission to perform this action.")
 
-    if project_id:
-        project = get_object_or_404(Project, id=project_id)
+    project = get_object_or_404(Project, id=project_id)
 
-        if request.user in project.collaborators.all() or project.user == request.user:
-            messages.warning(request, 'You are already part of this project.')
-            return redirect('common_default')
-
-        if project.is_private:
-            return redirect('join_private_project', project_id=project_id)
-
-        project.collaborators.add(request.user)
-        project.save()
-        messages.success(request, f'Successfully joined {project.name}!')
+    if request.user in project.collaborators.all() or project.user == request.user:
+        messages.warning(request, 'You are already part of this project.')
         return redirect('common_default')
 
-    projects = Project.objects.exclude(
-        Q(user=request.user) | Q(collaborators=request.user)
-    ).distinct()
+    if project.is_private:
+        return redirect('join_private_project', project_id=project_id)
 
-    return render(request, 'joinproject.html', {'projects': projects})
-def join_project(request):
-    # Show list of all projects available to join
+    project.collaborators.add(request.user)
+    project.save()
+    messages.success(request, f'Successfully joined {project.name}!')
+    return redirect('common_default')
+
+    # Handle listing available projects
     available_projects = Project.objects.exclude(
         Q(user=request.user) | Q(collaborators=request.user)
     ).distinct()

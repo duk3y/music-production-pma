@@ -8,8 +8,9 @@ urlpatterns = [
     # Project creation and joining
     path('create-project/', views.create_project, name='create_project'),
     path('projects/<int:project_id>/', views.project_info, name='project_info'),  
-    path('join-project/', views.join_project, name='join_project_list'),
-    path('join-project/<int:project_id>/', views.join_project, name='join_project'),
+    path('join-project/', views.join_project_list, name='join_project_list'),     # For actual joining of a project  
+    path('join-project/<int:project_id>/', views.join_project, name='join_project'),     # For actual joining of a project
+    path('join-project/<int:project_id>/', views.join_project, name='join_project'), 
     path('join-private-project/<int:project_id>/', views.join_private_project, name='join_private_project'),
     path('request/<int:request_id>/accept/', views.accept_request, name='accept_request'),
     path('request/<int:request_id>/ignore/', views.ignore_request, name='ignore_request'),

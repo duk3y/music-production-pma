@@ -99,34 +99,34 @@
                 </thead>
                 <tbody>
                     {% if user.profile.pmaStatus %}
-                    <tr>
-                        <td colspan="3" class="text-center">PMA admins cannot create or join projects.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="3" class="text-center">PMA admins cannot create or join projects.</td>
+                        </tr>
                     {% else %}
-                    {% if projects %}
-                    {% for project in projects %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'project_info' project.id %}">
-                                {{ project.name }}
-                            </a>
-                        </td>
-                        <td>{{ project.last_modified }}</td>
-                        <td style="text-align: right;">
-                            {% if project.user == request.user %}
-                            <a href="{% url 'confirm_delete_project' project.id %}">
-                                <img src="{% static 'trash_can.png' %}" alt="Delete"
-                                    style="height: 20px; cursor: pointer;">
-                            </a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    {% else %}
-                    <tr>
-                        <td colspan="3" class="text-center">You currently have no projects</td>
-                    </tr>
-                    {% endif %}
+                        {% if projects %}
+                            {% for project in projects %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'project_info' project.id %}">
+                                        {{ project.name }}
+                                    </a>
+                                </td>
+                                <td>{{ project.last_modified }}</td>
+                                <td style="text-align: right;">
+                                    {% if project.user == request.user %}
+                                    <a href="{% url 'confirm_delete_project' project.id %}">
+                                        <img src="{% static 'trash_can.png' %}" alt="Delete"
+                                            style="height: 20px; cursor: pointer;">
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center">You currently have no projects</td>
+                            </tr>
+                        {% endif %}
                     {% endif %}
                 </tbody>
             </table>
@@ -134,19 +134,15 @@
 
         <div class="button-container">
             {% if not user.profile.pmaStatus %}
-            <form action="{% url 'create_project' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-light"> Create a Project </button>
-            </form>
-            <form action="{% url 'join_project_list' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-light"> Join a Project </button>
-            </form>
+                <form action="{% url 'create_project' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-light">Create a Project</button>
+                </form>
+                <a href="{% url 'join_project_list' %}" class="btn btn-light">Join a Project</a>
             {% else %}
-            <a href="{% url 'manage_projects_admin' %}" class="btn btn-secondary">Manage Projects</a>
+                <a href="{% url 'manage_projects_admin' %}" class="btn btn-secondary">Manage Projects</a>
             {% endif %}
         </div>
-
     </main>
-    {% endblock %}
+{% endblock %}
 </body>
