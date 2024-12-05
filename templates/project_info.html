@@ -45,7 +45,6 @@
                             <th>File Name</th>
                             <th>Uploaded By</th>
                             <th>Uploaded Date</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,12 +59,6 @@
                             </td>
                             <td>{{ file.uploaded_by }}</td>
                             <td>{{ file.created_at|date:"M d, Y, g:i a" }}</td>
-                            <td>
-                                <form method="post" action="{% url 'delete_file' file.id %}" class="d-inline">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                </form>
-                            </td>
                         </tr>
                         {% empty %}
                         <tr>
@@ -77,7 +70,6 @@
 
                 <!-- Add Files and Manage Files Buttons -->
                 <div class="text-center mt-3">
-                    <a href="{% url 'file_upload' project.id %}" class="btn btn-primary">Add Files</a>
                     <a href="{% url 'manage_project_files' project.id %}" class="btn btn-secondary">Manage Files</a>
                 </div>
             </div>
