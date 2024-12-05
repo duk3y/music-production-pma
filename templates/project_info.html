@@ -5,49 +5,89 @@
 
 
 {% block content %}
+<style>
+    .dropdown-menu-dark {
+        background-color: #2c2c2c;
+        border: 1px solid #3c3c3c;
+    }
+    
+    .dropdown-menu-dark li {
+        border-bottom: 1px solid #3c3c3c;
+    }
+    
+    .dropdown-menu-dark li:last-child {
+        border-bottom: none;
+    }
+    
+    .position-absolute.top-0.start-100.translate-middle.badge {
+        background-color: #dc3545;
+    }
+    
+    .btn-success {
+        background-color: #198754;
+        border-color: #198754;
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+    
+    .dropdown-menu-dark .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+</style>
 <div class="container-fluid" style="height: 100%;">
-    <div class="row align-items-center mb-3">
-        <div class="col-auto p-3">
-            <a href="{% url 'common_default' %}" class="btn btn-secondary">My Projects</a>
-        </div>
-        
-        <div class="col text-center">
-            <h1 class="mb-0">{{ project.name }}</h1>
-        </div>
-        
-        <div class="col-auto p-3 text-end">
+    <div class="text-center mb-4 mt-3">
+        <h1 class="display-4">{{ project.name }}</h1>
+    </div>
+    
+    <div class="d-flex justify-content-between align-items-center mb-3 px-3">
+        <!-- Left side -->
+        <a href="{% url 'common_default' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>My Projects
+        </a>
+ 
+        <!-- Right side - Action Buttons -->
+        <div class="d-flex gap-3">
             {% if user == project.user %}
-                {% if pending_requests %}
-                    <div class="dropdown">
-                        <button class="btn btn-primary position-relative" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Pending Requests
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                {{ pending_requests|length }}
-                            </span>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-dark">
-                            {% for request in pending_requests %}
-                            <li class="px-3 py-2 d-flex align-items-center justify-content-between">
-                                <span>{{ request.user.username }}</span>
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <form method="post" action="{% url 'handle_join_request' request.id 'approve' %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-success btn-sm">✓</button>
-                                    </form>
-                                    <form method="post" action="{% url 'handle_join_request' request.id 'reject' %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger btn-sm">×</button>
-                                    </form>
+            <div class="dropdown">
+                <button class="btn btn-primary d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                    <span>Join Requests</span>
+                    {% if pending_requests %}
+                        <span class="badge bg-danger ms-2">{{ pending_requests|length }}</span>
+                    {% endif %}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end p-2" style="min-width: 300px;">
+                    {% if pending_requests %}
+                        {% for request in pending_requests %}
+                            <li class="mb-2 p-3 bg-dark rounded">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="fas fa-user text-light"></i>
+                                        <span class="text-light">{{ request.user.username }}</span>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <form method="POST" action="{% url 'accept_request' request.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                                        </form>
+                                        <form method="POST" action="{% url 'ignore_request' request.id %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm">Ignore</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
-            {% endif %}
-            {% if not project.is_private or user == project.user %}
-                <a href="{% url 'edit_project' project.id %}" class="btn btn-primary">Edit Project Details</a>
-            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <li class="p-3 text-light text-center">No pending join requests</li>
+                    {% endif %}
+                </ul>
+            </div>
+        {% endif %}
+            <a href="{% url 'edit_project' project.id %}" class="btn btn-primary">Edit Project Details</a>
             <a href="{% url 'project_task_view' project.id %}" class="btn btn-secondary">Tasks</a>
         </div>
     </div>

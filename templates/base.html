@@ -13,22 +13,30 @@
         html, body {
             height: 100%;
             margin: 0;
-            display: flex;
-            flex-direction: column;
         }
         body {
             background-color: #1c1c1c;
             color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;  
         }
-        header{
+        header {
             text-align: center;
             background-color: black;
+        }
+        main {
+            flex: 1 0 auto; 
+            padding-bottom: 20px; 
         }
         footer {
             text-align: center;
             padding: 10px 0;
             background-color: black;
-            margin-top: auto;
+            flex-shrink: 0; 
+            width: 100%;     
+            position: sticky; 
+            bottom: 0;       
         }
         nav {
             display: flex;
@@ -73,6 +81,10 @@
         }
         .auth-button-container {
             margin-left: auto;
+        }
+        .content-wrapper {
+        flex: 1;
+        padding-bottom: 60px; /* Match main padding */
         }
         main {
             flex: 1; /* main takes up remaining space */

@@ -61,15 +61,15 @@ class DiscussionComment(models.Model):
 class ProjectJoinRequest(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='join_requests')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    requested_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=[
         ('pending', 'Pending'),
         ('approved', 'Approved'),
         ('rejected', 'Rejected')
     ], default='pending')
-    
+    created_at = models.DateTimeField(auto_now_add=True)
+
     class Meta:
-        unique_together = ('project', 'user')  # Prevent duplicate requests
+        unique_together = ('project', 'user')  # Prevents duplicate requests
         
     def __str__(self):
         return f"{self.user.username} -> {self.project.name} ({self.status})"

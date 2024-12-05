@@ -69,9 +69,11 @@ def request_to_join(request, project_id):
         return JsonResponse({'error': 'Invalid method'}, status=400)
         
     project = get_object_or_404(Project, id=project_id)
+    print(f"Processing join request for project {project.id} from user {request.user.username}")
     
     # Check if user is already a member
     if request.user in project.collaborators.all() or project.user == request.user:
+        print("User is already a member")
         return JsonResponse({'error': 'Already a member'}, status=400)
         
     # Check for existing pending request
@@ -82,13 +84,15 @@ def request_to_join(request, project_id):
     ).exists()
     
     if existing_request:
+        print("User already has a pending request")
         return JsonResponse({'error': 'Request already pending'}, status=400)
         
     # Create new request
-    ProjectJoinRequest.objects.create(
+    join_request = ProjectJoinRequest.objects.create(
         project=project,
         user=request.user
     )
+    print(f"Created new join request with ID {join_request.id}")
     
     return JsonResponse({'status': 'success'})
 
@@ -234,31 +238,39 @@ def endswith(value, arg):
 
 @login_required
 def request_to_join(request, project_id):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid method'}, status=400)
+        
     project = get_object_or_404(Project, id=project_id)
     
     # Check if user is already a member
     if request.user in project.collaborators.all() or project.user == request.user:
-        messages.error(request, 'You are already a member of this project.')
-        return redirect('common_default')
+        return JsonResponse({'error': 'Already a member'}, status=400)
         
-    # Check if there's already a pending request
+    # Check for any existing request regardless of status
     existing_request = ProjectJoinRequest.objects.filter(
         project=project,
         user=request.user,
-        status='pending'
-    ).exists()
+    ).first()
     
     if existing_request:
-        messages.info(request, 'You already have a pending request for this project.')
-        return redirect('common_default')
-        
-    # Create new request
-    ProjectJoinRequest.objects.create(
-        project=project,
-        user=request.user
-    )
-    messages.success(request, 'Join request sent successfully.')
-    return redirect('common_default')
+        if existing_request.status == 'pending':
+            return JsonResponse({'error': 'Request already pending'}, status=400)
+        else:
+            # If request was previously rejected, allow new request
+            existing_request.status = 'pending'
+            existing_request.save()
+    else:
+        # Create new request
+        ProjectJoinRequest.objects.create(
+            project=project,
+            user=request.user,
+            status='pending'
+        )
+    
+    return JsonResponse({'status': 'success'})
+
+
 
 @login_required
 def manage_join_requests(request, project_id):
@@ -281,27 +293,46 @@ def manage_join_requests(request, project_id):
 @login_required
 def project_info(request, project_id):
     project = get_object_or_404(Project, id=project_id)
+    is_owner = request.user == project.user
+    
     context = {
         'project': project,
-        'is_member': request.user in project.collaborators.all() or request.user == project.user,
-        'pending_requests': [],
+        'is_member': request.user in project.collaborators.all() or is_owner,
     }
     
-    # Add pending requests if user is project owner
-    if request.user == project.user:
+    if is_owner:
         context['pending_requests'] = ProjectJoinRequest.objects.filter(
-            project=project,
+            project_id=project_id,
             status='pending'
         )
     
-    # Check if current user has a pending request
-    if request.user != project.user:
-        context['join_request_status'] = ProjectJoinRequest.objects.filter(
-            project=project,
-            user=request.user,
-            status='pending'
-        ).exists()
-    
     return render(request, 'project_info.html', context)
+
+@login_required
+def accept_request(request, request_id):
+    join_request = get_object_or_404(ProjectJoinRequest, id=request_id)
+    if request.user != join_request.project.user:
+        return HttpResponseForbidden()
+    
+    join_request.status = 'approved'
+    join_request.save()
+    join_request.project.collaborators.add(join_request.user)
+    messages.success(request, f'Added {join_request.user.username} to the project')
+    return redirect('project_info', project_id=join_request.project.id)
+
+@login_required  
+def ignore_request(request, request_id):
+    join_request = get_object_or_404(ProjectJoinRequest, id=request_id)
+    if request.user != join_request.project.user:
+        return HttpResponseForbidden()
+        
+    join_request.status = 'rejected'
+    join_request.save()
+    return redirect('project_info', project_id=join_request.project.id)
+
+
+
+
+
 
 

@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from . import views
-from .views import CustomLoginView, user_tasks, project_files_view, updateTaskStatus, delete_task, TaskInfoView, CalendarView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView, upload_file, ProjectDetailView, login_redirect, ProjectTaskView, create_task
+from .views import CustomLoginView, user_tasks, project_files_view, updateTaskStatus, delete_task, TaskInfoView, CalendarView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView, upload_file, login_redirect, ProjectTaskView, create_task
 
 
 urlpatterns = [
@@ -42,7 +42,6 @@ urlpatterns = [
     path('pmaadmin/', PMAAdminDefaultView.as_view(), name='pma_admin_default'),
     path("login-post", AuthenticationView, name="authentication_view"),
     path('projects/<int:project_id>/manage-files', project_files_view, name="manage_project_files" ),
-    path('projects/<int:project_id>/', ProjectDetailView, name="project_info" ),
     path('', include('users.urls')),  
     path('login-redirect/', login_redirect, name='login_redirect'),
     path('public-projects/', views.public_projects, name='public_projects'),
