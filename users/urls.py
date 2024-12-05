@@ -17,4 +17,7 @@ urlpatterns = [
     path('audio/<int:file_id>/', views.audio_playback, name='audio_playback'),
     path('audio/<int:file_id>/add_comment/', views.add_comment, name='add_comment'),
     path('comment/<int:comment_id>/delete/', views.delete_comment, name='delete_comment'),
+    path('project/<int:project_id>/manage-requests/', views.manage_join_requests, name='manage_join_requests'),
+    path('join-request/<int:request_id>/<str:action>/', views.handle_join_request, name='handle_join_request'),
+    path('project/<int:project_id>/request-join/', views.request_to_join, name='request_join'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
