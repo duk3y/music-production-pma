@@ -2,7 +2,7 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.views import View
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseForbidden
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from users.models import DiscussionComment, Profile, Project, ProjectFiles, Task
@@ -252,3 +252,14 @@ def add_project_comment(request, project_id):
             return redirect('project_info', project_id=project.id)
     else:
         return HttpResponse("Invalid request method", status=405)
+
+@login_required
+def resolve_discussion_comment(request, comment_id):
+    comment = get_object_or_404(DiscussionComment, id=comment_id)
+    # Optional: Only allow the comment creator or project owner to delete
+    if comment.user != request.user and comment.project.user != request.user:
+        return HttpResponseForbidden("You are not allowed to resolve this comment.")
+    
+    project_id = comment.project.id
+    comment.delete()
+    return redirect('project_info', project_id=project_id)
