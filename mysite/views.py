@@ -343,4 +343,25 @@ def delete_file_from_admin(request, file_id):
     file = get_object_or_404(ProjectFiles, id=file_id)
     file.delete()
 
-    return redirect('manage_files_admin')  # Updated redirect
+    return redirect('manage_files_admin') 
+
+class ManageProjectsAdminView(LoginRequiredMixin, View):
+    template_name = 'manage_projects_admin.html'
+    login_url = '/login/'  # Redirect to login if unauthenticated
+
+    def dispatch(self, request, *args, **kwargs):
+        # Ensure the user is a PMA admin
+        try:
+            profile = request.user.profile
+            if not profile.pmaStatus:
+                return HttpResponseForbidden("You do not have permission to access this page.")
+        except AttributeError:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        projects = Project.objects.all()  # Fetch all projects
+        context = {
+            'projects': projects,
+        }
+        return render(request, self.template_name, context)

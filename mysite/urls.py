@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from . import views
-from .views import CustomLoginView, user_tasks, project_files_view, updateTaskStatus, delete_task, TaskInfoView, CalendarView, CommonDefaultView, ManageFilesAdminView, AuthenticationView, upload_file, ProjectDetailView, login_redirect, ProjectTaskView, create_task
+from .views import CustomLoginView, user_tasks, project_files_view, updateTaskStatus, delete_task, TaskInfoView, CalendarView, CommonDefaultView, ManageFilesAdminView, ManageProjectsAdminView, AuthenticationView, upload_file, ProjectDetailView, login_redirect, ProjectTaskView, create_task
 
 
 urlpatterns = [
@@ -53,6 +53,7 @@ urlpatterns = [
     path('projects/<int:project_id>/delete/confirm/', views.confirm_delete_project, name='confirm_delete_project'),
     path('file/<int:file_id>/manage-delete/', views.delete_file_from_manage, name='delete_file_from_manage'),
     path('pmaadmin/file/delete/<int:file_id>/', views.delete_file_from_admin, name='delete_file_from_admin'),
+     path('manage-projects-admin/', ManageProjectsAdminView.as_view(), name='manage_projects_admin'),
 
 
 

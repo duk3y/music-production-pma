@@ -89,23 +89,22 @@
       <p>Welcome to Music Manager! Collaborate, create, and capture your sound with our platform. Our mission is to provide musicians with the tools they need to manage their music projects efficiently.</p>
       <div class="mt-4 text-center buttons-container">
         {% if user.is_authenticated %}
-            {% with user.profile as profile %}
-                {% if profile.pmaStatus %}
-                    <!-- Buttons for PMA admins -->
-                    <a href="{% url 'manage_files_admin' %}" class="btn btn-secondary mt-3">Manage Files</a>
-                    <a href="" class="btn btn-secondary mt-3">Manage Projects</a>
-                {% else %}
-                    <!-- Buttons for regular users -->
-                    <a href="{% url 'public_projects' %}" class="btn btn-primary mt-3">View Public Projects</a>
-                    <a href="{% url 'common_default' %}" class="btn btn-secondary mt-3">Your Projects</a>
-                {% endif %}
-            {% endwith %}
+          {% with user.profile as profile %}
+              {% if profile.pmaStatus %}
+                  <!-- PMA admin-specific buttons -->
+                  <a href="{% url 'manage_files_admin' %}" class="btn btn-secondary mt-3">Manage Files</a>
+                  <a href="{% url 'manage_projects_admin' %}" class="btn btn-secondary mt-3">Manage Projects</a>
+              {% else %}
+                  <!-- Regular user buttons -->
+                  <a href="{% url 'public_projects' %}" class="btn btn-primary mt-3">View Public Projects</a>
+                  <a href="{% url 'common_default' %}" class="btn btn-secondary mt-3">Your Projects</a>
+              {% endif %}
+          {% endwith %}
         {% else %}
-            <!-- Button for unauthenticated users -->
+            <!-- For unauthenticated users -->
             <a href="{% url 'public_projects' %}" class="btn btn-primary mt-3">View Public Projects</a>
         {% endif %}
-    </div>
-    
+      </div>
     </div>
   </div>
 {% endblock %}
