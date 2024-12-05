@@ -97,8 +97,8 @@ class CommonDefaultView(LoginRequiredMixin, View):
         print("Rendering commondefault.html with", len(projects), "projects")
         return render(request, self.template_name, context)
 
-class PMAAdminDefaultView(View):
-    template_name = 'pmaadmindefault.html'
+class ManageFilesAdminView(View):
+    template_name = 'manage_files_admin.html'
 
     def dispatch(self, request, *args, **kwargs):
         # Check if the user is logged in and has pmaStatus
@@ -130,7 +130,7 @@ def AuthenticationView(request):
     # print(Profile.pmaStatus)
     if profile.pmaStatus:
         print("yes")
-        return redirect(reverse("pma_admin_default"))
+        return redirect(reverse("manage_files_admin"))
     else:
         print("no")
         return redirect(reverse("common_default"))
@@ -203,7 +203,7 @@ def login_redirect(request):
     profile = Profile.objects.get(user=user)
 
     if profile.pmaStatus:
-        return redirect('pma_admin_default')
+        return redirect('manage_files_admin')
     else:
         return redirect('common_default')
     
@@ -341,10 +341,6 @@ def delete_file_from_manage(request, file_id):
 
 def delete_file_from_admin(request, file_id):
     file = get_object_or_404(ProjectFiles, id=file_id)
-
-    if request.user != file.uploaded_by and not request.user.is_staff:
-        return HttpResponseForbidden("You are not allowed to delete this file.")
-   
     file.delete()
 
-    return redirect('pma_admin_default')
+    return redirect('manage_files_admin')  # Updated redirect
