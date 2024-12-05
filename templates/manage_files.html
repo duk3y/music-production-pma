@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}
   Manage Files - {{ project.name }}
@@ -14,6 +15,80 @@
     <div class="button-container" style="text-align: right">
         <a href="{% url 'file_upload' project.id %}" class="btn btn-secondary btn-light btn-sm">Upload a File</a>
     </div>
+    <div class="container my-3">
+        <form method="GET" action="{% url 'search_files' project.id %}">
+            <div class="input-group mb-3">
+                <input type="text" name="query" class="form-control" placeholder="Search files by title, description, or keywords" aria-label="Search" value="{{ query|default:'' }}">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+    {% if query %}
+            <p>Search results for "<strong>{{ query }}</strong>":</p>
+            {% if files %}
+                <ul class="list-group">
+                    {% for file in files %}
+                        <li class="list-group-item bg-dark text-light mb-3">
+                            {% if file.file.name|is_video %}
+                                <video width="320" height="240" controls>
+                                    <source src="{{ file.file.url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            {% elif file.file.name|is_image %}
+                                <img src="{{ file.file.url }}" alt="Image file" width="320" height="240">
+                            {% elif file.file.name|is_audio %}
+                                <audio controls>
+                                    <source src="{{ file.file.url }}" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            {% elif file.file.name|is_text %}
+                                <a href="{{ file.file.url }}" target="_blank">{{ file.title }}</a>
+                            {% endif %}
+
+                            <h4>{% with file.title|highlight_query:query as highlighted_title %}{{ highlighted_title }}{% endwith %}</h4>
+                            <p><strong>Description:</strong> {% with file.description|highlight_query:query as highlighted_description %}{{ highlighted_description }}{% endwith %}</p>
+                            <p><strong>Keywords:</strong> {% with file.keywords|default_if_none:''|highlight_query:query as highlighted_keywords %}{{ highlighted_keywords }}{% endwith %}</p>
+                            <p><strong>Uploaded by:</strong> {{ file.uploaded_by }}</p>
+                            <p><strong>Date:</strong> {{ file.created_at|date:"Y-m-d H:i" }}</p>
+
+                            <a href="{% url 'edit_metadata' file.id %}" class="btn btn-secondary btn-sm mt-2">Edit Metadata</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No files match your search criteria.</p>
+            {% endif %}
+        {% else %}
+            <ul class="nav nav-tabs">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="video-tab" data-bs-toggle="tab" aria-current="page" href="#video-files">Video Files</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="image-files-tab" data-bs-toggle="tab" href="#image-files">Image Files</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="text-files-tab" data-bs-toggle="tab" href="#text-files">Text Files</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="audio-files-tab" data-bs-toggle="tab" href="#audio-files">Audio Files</a>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3">
+                <div class="tab-pane fade show active" id="video-files">
+                    {% include 'filepreviews/showvideofiles.html' %}
+                </div>
+                <div class="tab-pane fade" id="image-files">
+                    {% include 'filepreviews/showimagefiles.html' %}
+                </div>
+                <div class="tab-pane fade" id="text-files">
+                    {% include 'filepreviews/showtextfiles.html' %}
+                </div>
+                <div class="tab-pane fade" id="audio-files">
+                    {% include 'filepreviews/showaudiofiles.html' %}
+                </div>
+            </div>
+        {% endif %}
 
     <ul class="nav nav-tabs">
         <li class="nav-item" role="presentation">

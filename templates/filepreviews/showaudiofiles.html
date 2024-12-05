@@ -1,3 +1,4 @@
+{% load static %}
 <div>
     <h3>Audio Files</h3>
     {% if audio_files %}
@@ -17,6 +18,12 @@
                 <a href="{% url 'edit_metadata' file.id %}" class="btn btn-secondary btn-sm mt-2">
                     Edit Metadata
                 </a>
+                {% if user == file.uploaded_by or user == file.project.user %}
+                    <a href="{% url 'delete_file_from_manage' file.id %}" 
+                    onclick="return confirm('Are you sure you want to delete this file?');">
+                        <img src="{% static 'trash_can.png' %}" alt="Delete" style="height: 25px; cursor: pointer;">
+                    </a>
+                {% endif %}
             </div>
         {% endfor %}
     {% else %}

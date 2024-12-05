@@ -10,6 +10,8 @@ from users.forms import ProjectForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import UploadFileForm, CreateTaskForm
 from django.utils.timezone import now
+from django.db.models import Q
+from django.contrib import messages
 
 import json
 
@@ -266,3 +268,55 @@ def resolve_discussion_comment(request, comment_id):
     comment.delete()
     return redirect('project_info', project_id=project.id)
 
+@login_required
+def search_files(request, project_id):
+    project = Project.objects.get(id=project_id)
+    query = request.GET.get("query", "").strip()
+    if query:
+        files = ProjectFiles.objects.filter(
+            project=project
+        ).filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(keywords__icontains=query)
+        )
+    else:
+        return redirect('manage_project_files', project_id=project_id)
+
+    return render(request, 'project_files.html', {
+        'project': project,
+        'files': files,
+        'query': query,
+    })
+
+@login_required
+def confirm_delete_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id, user=request.user)
+
+    return render(request, 'confirm_delete_project.html', {
+        'project': project
+    })
+
+@login_required
+def delete_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id, user=request.user)
+
+    if request.method == 'POST':
+        project.delete()
+        messages.success(request, f'Project "{project.name}" was deleted successfully.')
+        return redirect('common_default')
+
+    return redirect('confirm_delete_project', project_id=project_id)
+
+@login_required
+def delete_file_from_manage(request, file_id):
+    file = get_object_or_404(ProjectFiles, id=file_id)
+    project = file.project
+
+    if request.user == project.user or request.user == file.uploaded_by:
+        file.delete()
+        messages.success(request, "File deleted successfully.")
+    else:
+        messages.error(request, "You do not have permission to delete this file.")
+
+    return redirect('manage_project_files', project_id=project.id)
