@@ -18,24 +18,27 @@
         <tbody>
             {% for project in projects %}
             <tr>
-                <td>{{ project.name }}</td>
+                <td>
+                    <a href="{% url 'project_info' project.id %}">
+                        {{ project.name }}
+                    </a>
+                </td>
                 <td>{{ project.user.username }}</td>
                 <td>
                     {% if project.is_private %}
-                        Private
+                    Private
                     {% else %}
-                        Public
+                    Public
                     {% endif %}
                 </td>
                 <td>{{ project.last_modified|date:"Y-m-d H:i" }}</td>
                 <td>
-                    <!-- Add action buttons like Edit or Delete -->
                     <a href="{% url 'edit_project' project.id %}" class="btn btn-warning btn-sm">Edit</a>
                     <a href="{% url 'delete_project' project.id %}" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
             {% endfor %}
-        </tbody>        
+        </tbody>
     </table>
     {% if not projects %}
     <p class="text-center">No projects found.</p>

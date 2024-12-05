@@ -8,10 +8,18 @@
     <!-- Header Row -->
     <div class="row align-items-center mb-3">
         <div class="col-auto p-3">
-            <a href="{% url 'common_default' %}" class="btn btn-secondary">
-                <i class="fa fa-arrow-left"></i> My Projects
-            </a>
-        </div>
+            {% with user.profile as profile %}
+                {% if profile.pmaStatus %}
+                    <a href="{% url 'manage_projects_admin' %}" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Manage Projects
+                    </a>
+                {% else %}
+                    <a href="{% url 'common_default' %}" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> My Projects
+                    </a>
+                {% endif %}
+            {% endwith %}
+        </div>        
         <div class="col text-center">
             <h1 class="mb-0">{{ project.name }}</h1>
         </div>
