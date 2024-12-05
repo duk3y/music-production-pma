@@ -101,24 +101,27 @@ class ManageFilesAdminView(View):
     template_name = 'manage_files_admin.html'
 
     def dispatch(self, request, *args, **kwargs):
-        # Check if the user is logged in and has pmaStatus
         if not request.user.is_authenticated:
-            return redirect('login')  # Redirect to login if not authenticated
+            return redirect('login')
 
-        try:
-            profile = Profile.objects.get(user=request.user)
-            if not profile.pmaStatus:
-                return HttpResponseForbidden("You do not have permission to access this page.")
-        except Profile.DoesNotExist:
+        if not request.user.profile.pmaStatus:
             return HttpResponseForbidden("You do not have permission to access this page.")
 
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
+        search_query = request.GET.get('search', '')
         files = ProjectFiles.objects.select_related('project', 'uploaded_by')
+
+        if search_query:
+            files = files.filter(
+                Q(project__name__icontains=search_query) |
+                Q(title__icontains=search_query) |
+                Q(uploaded_by__username__icontains=search_query)
+            )
+
         context = {
             'files': files,
-            'username': request.user.username,
         }
         return render(request, self.template_name, context)
 
@@ -357,22 +360,28 @@ def delete_file_from_admin(request, file_id):
     return redirect('manage_files_admin')
 
 
-class ManageProjectsAdminView(LoginRequiredMixin, View):
+class ManageProjectsAdminView(View):
     template_name = 'manage_projects_admin.html'
-    login_url = '/login/'  # Redirect to login if unauthenticated
 
     def dispatch(self, request, *args, **kwargs):
-        # Ensure the user is a PMA admin
-        try:
-            profile = request.user.profile
-            if not profile.pmaStatus:
-                return HttpResponseForbidden("You do not have permission to access this page.")
-        except AttributeError:
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        if not request.user.profile.pmaStatus:
             return HttpResponseForbidden("You do not have permission to access this page.")
+
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        projects = Project.objects.all()  # Fetch all projects
+        search_query = request.GET.get('search', '')
+        projects = Project.objects.all()
+
+        if search_query:
+            projects = projects.filter(
+                Q(name__icontains=search_query) |
+                Q(user__username__icontains=search_query)
+            )
+
         context = {
             'projects': projects,
         }
