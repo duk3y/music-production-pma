@@ -163,6 +163,8 @@
         </div>
     </div>
 
+
+
     <!-- Discussion and Comments Section -->
     <div class="row mt-4">
         <div class="col-md-12 p-4">
@@ -210,4 +212,9 @@
         </div>
     </div>
 </div>
+
+<a href="{% url 'project_members' project.id %}" class="btn btn-info">
+    <i class="fas fa-users"></i> Project Members
+</a>
+
 {% endblock %}

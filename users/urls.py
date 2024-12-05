@@ -27,4 +27,5 @@ urlpatterns = [
     path('project/<int:project_id>/request-join/', views.request_to_join, name='request_join'),
     path('project/<int:project_id>/manage-requests/', views.manage_join_requests, name='manage_join_requests'),
     path('join-request/<int:request_id>/<str:action>/', views.handle_join_request, name='handle_join_request'),
+    path('project/<int:project_id>/members/', views.project_members, name='project_members'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

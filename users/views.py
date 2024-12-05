@@ -330,6 +330,11 @@ def ignore_request(request, request_id):
     join_request.save()
     return redirect('project_info', project_id=join_request.project.id)
 
+def project_members(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+    members = project.collaborators.order_by('date_joined')  
+    return render(request, 'project_members.html', {'project': project, 'members': members})
+
 
 
 
