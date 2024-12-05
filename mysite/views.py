@@ -101,7 +101,13 @@ class PMAAdminDefaultView(View):
     template_name = 'pmaadmindefault.html'
 
     def get(self, request):
-        return render(request, self.template_name)
+        files = ProjectFiles.objects.select_related('project', 'uploaded_by')
+        context = {
+            'files': files,
+            'username': request.user.username,
+        }
+        return render(request, self.template_name, context)
+
 
 
 @login_required()
@@ -320,3 +326,13 @@ def delete_file_from_manage(request, file_id):
         messages.error(request, "You do not have permission to delete this file.")
 
     return redirect('manage_project_files', project_id=project.id)
+
+def delete_file_from_admin(request, file_id):
+    file = get_object_or_404(ProjectFiles, id=file_id)
+
+    if request.user != file.uploaded_by and not request.user.is_staff:
+        return HttpResponseForbidden("You are not allowed to delete this file.")
+   
+    file.delete()
+
+    return redirect('pma_admin_default')

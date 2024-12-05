@@ -52,6 +52,8 @@ urlpatterns = [
     path('projects/<int:project_id>/delete/', views.delete_project, name='delete_project'),
     path('projects/<int:project_id>/delete/confirm/', views.confirm_delete_project, name='confirm_delete_project'),
     path('file/<int:file_id>/manage-delete/', views.delete_file_from_manage, name='delete_file_from_manage'),
+    path('pmaadmin/file/delete/<int:file_id>/', views.delete_file_from_admin, name='delete_file_from_admin'),
+
 
 
 ]
