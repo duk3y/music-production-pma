@@ -1,113 +1,148 @@
 {% extends "base.html" %}
-{% load static %}
+{% load crispy_forms_tags %}
 {% block content %}
-
 <style>
-    .join-project-container {
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 40px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 20px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(10px);
+    body {
+        background-color: #1c1c1c;
+        color: #ffffff;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
     }
-
-    .project-card {
+    main {
+        flex-grow: 1;
         padding: 20px;
-        background: rgba(40, 40, 40, 0.5);
-        border-radius: 12px;
-        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
-
-    .project-title {
-        font-size: 24px;
-        color: white;
-        margin-bottom: 10px;
+    h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
     }
-
+    .container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+    .project-card {
+        background-color: #2c2c2c;
+        border: 1px solid #3c3c3c;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+    .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .lock-icon {
+        color: #ffd700;
+    }
     .project-description {
-        color: #aaa;
-        margin-bottom: 15px;
+        color: #cccccc;
+        margin-bottom: 1rem;
     }
-
     .project-creator {
-        color: #888;
-        font-size: 14px;
-        margin-bottom: 20px;
+        color: #888888;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
     }
-
-    .join-btn {
-        padding: 8px 20px;
-        border-radius: 6px;
-        font-size: 16px;
-        transition: all 0.3s ease;
-        border: none;
-    }
-
-    .join-btn.request {
-        background: #3e8ef7;
+    .request-button {
+        background: #0d6efd;
         color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
     }
-
-    .join-btn.request:hover {
-        background: #2979ff;
-        transform: translateY(-2px);
+    .request-button:hover {
+        background: #0b5ed7;
     }
-
-    .join-btn.pending {
-        background: #4a4a4a;
-        color: #aaa;
+    .request-button:disabled {
+        background: #666;
         cursor: not-allowed;
     }
-
-    .private-indicator {
-        float: right;
-        color: #ffd700;
+    .request-button.requested {
+        background: #666;
+        cursor: not-allowed;
     }
 </style>
 
-<div class="join-project-container">
-    <h1 class="text-white mb-4">Join a Project</h1>
-
-    <div class="project-card">
-        <span class="private-indicator">
-            <i class="fas fa-lock"></i>
-        </span>
-        <h2 class="project-title">{{ project.name }}</h2>
-        {% if project.description %}
-            <p class="project-description">{{ project.description }}</p>
-        {% else %}
-            <p class="project-description">No description provided</p>
-        {% endif %}
-        <p class="project-creator">Created by: {{ project.user.username }}</p>
-
-        <div id="join-button-container">
-            <!-- This div will be replaced by React -->
+<div class="container">
+    <h1 class="mb-4">Join a Project</h1>
+    <div class="project-list">
+        {% for project in projects %}
+        <div class="project-card">
+            <div class="project-header">
+                <h5>{{ project.name }}</h5>
+                {% if project.is_private %}
+                <i class="fas fa-lock lock-icon"></i>
+                {% endif %}
+            </div>
+            <div class="project-description">
+                {{ project.description|default:"No description provided" }}
+            </div>
+            <div class="project-creator">
+                Created by: {{ project.user.username }}
+            </div>
+            {% if project.is_private %}
+                <button 
+                    id="requestButton-{{ project.id }}"
+                    class="request-button {% if project.has_pending_request %}requested{% endif %}"
+                    onclick="handleRequest('{{ project.id }}')"
+                    {% if project.has_pending_request %}disabled{% endif %}
+                >
+                    {% if project.has_pending_request %}
+                        Permission Requested
+                    {% else %}
+                        Request to Join
+                    {% endif %}
+                </button>
+                {% else %}
+                <form method="POST" action="{% url 'join_project' project.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Join Project</button>
+                </form>
+            {% endif %}
         </div>
+        {% empty %}
+        <div class="text-center">
+            <p>No projects available to join at this time.</p>
+        </div>
+        {% endfor %}
     </div>
 </div>
 
-<!-- Add React and your component script -->
-<script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
-<script src="{% static 'js/joinRequestButton.js' %}"></script>
-
 <script>
-    // Initialize the React component
-    document.addEventListener('DOMContentLoaded', function() {
-        const container = document.getElementById('join-button-container');
-        const projectId = "{{ project.id }}";  // Ensure the ID is properly quoted
-        const initialStatus = "{% if join_request_status %}pending{% else %}none{% endif %}";
+    async function handleRequest(projectId) {
+        const button = document.getElementById(`requestButton-${projectId}`);
+        button.disabled = true;
         
-        ReactDOM.render(
-            React.createElement(JoinRequestButton, {
-                projectId: parseInt(projectId),  // Convert string to number
-                initialStatus: initialStatus
-            }),
-            container
-        );
-    });
+        try {
+            const response = await fetch(`/project/${projectId}/request-join/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+            });
+            
+            if (response.ok) {
+                button.textContent = 'Permission Requested';
+                button.classList.add('requested');
+            } else {
+                button.disabled = false;
+                console.error('Request failed');
+            }
+        } catch (error) {
+            button.disabled = false;
+            console.error('Error:', error);
+        }
+    }
 </script>
-
 {% endblock %}
