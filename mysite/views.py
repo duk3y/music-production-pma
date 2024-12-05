@@ -100,6 +100,20 @@ class CommonDefaultView(LoginRequiredMixin, View):
 class PMAAdminDefaultView(View):
     template_name = 'pmaadmindefault.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        # Check if the user is logged in and has pmaStatus
+        if not request.user.is_authenticated:
+            return redirect('login')  # Redirect to login if not authenticated
+
+        try:
+            profile = Profile.objects.get(user=request.user)
+            if not profile.pmaStatus:
+                return HttpResponseForbidden("You do not have permission to access this page.")
+        except Profile.DoesNotExist:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request):
         files = ProjectFiles.objects.select_related('project', 'uploaded_by')
         context = {
@@ -107,8 +121,6 @@ class PMAAdminDefaultView(View):
             'username': request.user.username,
         }
         return render(request, self.template_name, context)
-
-
 
 @login_required()
 def AuthenticationView(request):
