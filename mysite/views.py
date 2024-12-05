@@ -317,21 +317,26 @@ def confirm_delete_project(request, project_id):
 
 @login_required
 def delete_project(request, project_id):
-    project = get_object_or_404(Project, id=project_id, user=request.user)
+    project = get_object_or_404(Project, id=project_id)
+
+    # Ensure only PMA admins or project owners can delete
+    if not (request.user.profile.pmaStatus or project.user == request.user):
+        return HttpResponseForbidden("You do not have permission to delete this project.")
 
     if request.method == 'POST':
         project.delete()
         messages.success(request, f'Project "{project.name}" was deleted successfully.')
-        return redirect('common_default')
+        return redirect('manage_projects_admin')  # Redirect to manage projects for admins
 
-    return redirect('confirm_delete_project', project_id=project_id)
+    return redirect('manage_projects_admin')  # Fallback redirect
+
 
 @login_required
 def delete_file_from_manage(request, file_id):
     file = get_object_or_404(ProjectFiles, id=file_id)
     project = file.project
 
-    if request.user == project.user or request.user == file.uploaded_by:
+    if request.user == file.uploaded_by:
         file.delete()
         messages.success(request, "File deleted successfully.")
     else:
@@ -339,10 +344,10 @@ def delete_file_from_manage(request, file_id):
 
     return redirect('manage_project_files', project_id=project.id)
 
+@login_required
 def delete_file_from_admin(request, file_id):
     file = get_object_or_404(ProjectFiles, id=file_id)
     file.delete()
-
     return redirect('manage_files_admin') 
 
 class ManageProjectsAdminView(LoginRequiredMixin, View):
