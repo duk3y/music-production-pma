@@ -4,11 +4,11 @@
 
 {% block content %}
 
-<div class="container mt-5">
-    <div class="container mt-4">
-        <a href="{% url 'manage_files_admin' %}" class="btn btn-primary">Manage Files</a>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <h1>Manage Projects</h1>
+        <a href="{% url 'manage_files_admin' %}" class="btn btn-primary">Go to Manage Files</a>
     </div>
-    <h3 class="text-center pb-3">Manage Projects (Admin)</h3>
     <table class="table table-dark table-hover mt-3">
         <thead>
             <tr>
