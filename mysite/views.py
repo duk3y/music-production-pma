@@ -2,12 +2,15 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse
 from django.views import View
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from users.models import Profile, Project, ProjectFiles, Task
+from users.models import DiscussionComment, Profile, Project, ProjectFiles, Task
 from users.forms import ProjectForm 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import UploadFileForm, CreateTaskForm
+from django.utils.timezone import now
+
 import json
 
 @login_required
@@ -233,3 +236,19 @@ def updateTaskStatus(request):
     task.save()
 
     return JsonResponse({'success': True})
+
+@login_required
+def add_project_comment(request, project_id):
+    project = get_object_or_404(Project, id=project_id)
+
+    if request.method == 'POST':
+        comment_text = request.POST.get('comment')
+        if comment_text:
+            DiscussionComment.objects.create(
+                project=project,
+                user=request.user,
+                text=comment_text
+            )
+            return redirect('project_info', project_id=project.id)
+    else:
+        return HttpResponse("Invalid request method", status=405)

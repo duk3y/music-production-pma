@@ -48,3 +48,12 @@ class Task(models.Model):
     deadline = models.DateTimeField()
     assignees = models.ManyToManyField(User, related_name = 'assignees', blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class DiscussionComment(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='discussion_comments')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.project.name}: {self.text[:20]}"

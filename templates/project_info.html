@@ -1,7 +1,7 @@
-{% extends 'base.html' %} 
-{% block title %} 
-{{ project.name }} - Project Homepage 
-{% endblock %} 
+{% extends 'base.html' %}
+{% block title %}
+{{ project.name }} - Project Homepage
+{% endblock %}
 
 {% block content %}
 <div class="container-fluid" style="height: 100%;">
@@ -17,7 +17,7 @@
         </div>
         <div class="col-auto p-3 text-end">
             {% if not project.is_private %}
-                <a href="{% url 'edit_project' project.id %}" class="btn btn-primary">Edit Project Details</a>
+            <a href="{% url 'edit_project' project.id %}" class="btn btn-primary">Edit Project Details</a>
             {% endif %}
             <a href="{% url 'project_task_view' project.id %}" class="btn btn-secondary">
                 <i class="fas fa-tasks"></i> Tasks
@@ -42,27 +42,27 @@
                     </thead>
                     <tbody>
                         {% for file in project.projectfiles_set.all %}
-                            <tr>
-                                <td>
-                                    {% if file.file.name|lower|endswith:'.mp3' or file.file.name|lower|endswith:'.wav' %}
-                                        <a href="{% url 'audio_playback' file_id=file.id %}">{{ file.title }}</a>
-                                    {% else %}
-                                        <a href="{{ file.file.url }}" target="_blank">{{ file.title }}</a>
-                                    {% endif %}
-                                </td>
-                                <td>{{ file.uploaded_by }}</td>
-                                <td>{{ file.created_at|date:"M d, Y, g:i a" }}</td>
-                                <td>
-                                    <form method="post" action="{% url 'delete_file' file.id %}" class="d-inline">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td>
+                                {% if file.file.name|lower|endswith:'.mp3' or file.file.name|lower|endswith:'.wav' %}
+                                <a href="{% url 'audio_playback' file_id=file.id %}">{{ file.title }}</a>
+                                {% else %}
+                                <a href="{{ file.file.url }}" target="_blank">{{ file.title }}</a>
+                                {% endif %}
+                            </td>
+                            <td>{{ file.uploaded_by }}</td>
+                            <td>{{ file.created_at|date:"M d, Y, g:i a" }}</td>
+                            <td>
+                                <form method="post" action="{% url 'delete_file' file.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
                         {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center">No files found.</td>
-                            </tr>
+                        <tr>
+                            <td colspan="4" class="text-center">No files found.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -82,13 +82,13 @@
                 <div class="deadline-container p-3 rounded">
                     <ul class="list-group">
                         {% for deadline in project.deadlines %}
-                            <li class="list-group-item bg-dark text-light">
-                                {{ deadline.name }} - Due: {{ deadline.due_date }}
-                            </li>
+                        <li class="list-group-item bg-dark text-light">
+                            {{ deadline.name }} - Due: {{ deadline.due_date }}
+                        </li>
                         {% empty %}
-                            <li class="list-group-item bg-dark text-light text-center">
-                                No deadlines set.
-                            </li>
+                        <li class="list-group-item bg-dark text-light text-center">
+                            No deadlines set.
+                        </li>
                         {% endfor %}
                     </ul>
                 </div>
@@ -102,16 +102,16 @@
             <div class="text-center p-4">
                 <h2>Discussion and Comments</h2>
                 <div class="comment-section bg-dark p-3">
-                    {% for comment in project.comments %}
-                        <div class="comment my-2">
-                            <strong>{{ comment.user }}:</strong> {{ comment.text }}
-                            <span class="small">Posted on: {{ comment.date }}</span>
-                        </div>
+                    {% for comment in project.discussion_comments.all %}
+                    <div class="comment my-2">
+                        <strong>{{ comment.user.username }}:</strong> {{ comment.text }}
+                        <span class="small">Posted on: {{ comment.created_at|date:"M d, Y, g:i a" }}</span>
+                    </div>
                     {% empty %}
-                        <p class="text-center">No comments yet. Be the first to start the discussion!</p>
+                    <p class="text-center">No comments yet. Be the first to start the discussion!</p>
                     {% endfor %}
 
-                    <form method="post" action="{% url 'add_comment' project.id %}">
+                    <form method="post" action="{% url 'add_project_comment' project.id %}">
                         {% csrf_token %}
                         <div class="input-group mt-3">
                             <input type="text" name="comment" class="form-control" placeholder="Add a comment..." />
@@ -122,5 +122,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
