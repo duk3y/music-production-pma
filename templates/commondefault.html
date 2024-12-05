@@ -1,69 +1,84 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-    <title>My Projects</title>
-    <style>
-        body {
-            background-color: #1c1c1c;
-            color: #ffffff;
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-        }
-        main {
-            flex-grow: 1;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        table th, table td {
-            color: #fff;
-        }
-        table th {
-            border-bottom: 1px solid #888;
-        }
-        .pagination {
-            margin: 10px 0;
-        }
-        .btn-light {
-            background-color: #f8f9fa;
-            color: #000;
-        }
-        h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-        }
-        .input-group {
-            margin-bottom: 20px;
-        }
-        .input-group input {
-            height: 45px;
-        }
-        .search-container {
-            display: flex;
-            justify-content: flex-start;
-        }
-        .search-container .input-group {
-            margin-top: 30px;
-            margin-top: 15px;
-            width: 50%;
-        }
-        .project-list {
-            height: 400px; 
-            overflow-y: auto; 
-        }
-        .button-container {
-            margin-top: 30px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .button-container .btn {
-            padding: 20px 50px;
-            font-size: 1.3rem;
-        }
-    </style>
+<title>My Projects</title>
+<style>
+    body {
+        background-color: #1c1c1c;
+        color: #ffffff;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    main {
+        flex-grow: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    table th,
+    table td {
+        color: #fff;
+    }
+
+    table th {
+        border-bottom: 1px solid #888;
+    }
+
+    .pagination {
+        margin: 10px 0;
+    }
+
+    .btn-light {
+        background-color: #f8f9fa;
+        color: #000;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .input-group input {
+        height: 45px;
+    }
+
+    .search-container {
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .search-container .input-group {
+        margin-top: 30px;
+        margin-top: 15px;
+        width: 50%;
+    }
+
+    .project-list {
+        height: 400px;
+        overflow-y: auto;
+    }
+
+    .button-container {
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .button-container .btn {
+        padding: 20px 50px;
+        font-size: 1.3rem;
+    }
+</style>
+
 <body>
     <main class="container">
         <h1 class="text-center">My Projects</h1>
@@ -84,30 +99,32 @@
                 </thead>
                 <tbody>
                     {% if projects %}
-                        {% for project in projects %}
-                            <tr>
-                                <td> <a href="{% url 'project_info' project.id %}">
-                                    {{ project.name }} </a>
-                                </td>
-                                <td>{{ project.last_modified }}</td>
-                                <td style="text-align: right;">
-                                    {% if project.user == request.user %}
-                                        <a href="{% url 'confirm_delete_project' project.id %}">
-                                            <img src="{% static 'trash_can.png' %}" alt="Delete" style="height: 20px; cursor: pointer;">
-                                        </a>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
+                    {% for project in projects %}
+                    <tr>
+                        <td> <a href="{% url 'project_info' project.id %}">
+                                {{ project.name }} </a>
+                        </td>
+                        <td>{{ project.last_modified }}</td>
+                        <td style="text-align: right;">
+                            {% if project.user == request.user %}
+                            <a href="{% url 'confirm_delete_project' project.id %}">
+                                <img src="{% static 'trash_can.png' %}" alt="Delete"
+                                    style="height: 20px; cursor: pointer;">
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
                     {% else %}
-                        <tr>
-                            <td colspan="3" class="text-center">You currently have no projects</td>
-                        </tr>
+                    <tr>
+                        <td colspan="3" class="text-center">You currently have no projects</td>
+                    </tr>
                     {% endif %}
                 </tbody>
             </table>
         </div>
         <div class="button-container">
+            {% if not user.profile.pmaStatus %}
             <form action="{% url 'create_project' %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-light"> Create a Project </button>
@@ -115,8 +132,12 @@
             <form action="{% url 'join_project_list' %}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-light"> Join a Project </button>
-            </form>  
+            </form>
+            {% else %}
+            <p class="text-center">PMA admins cannot create or join projects.</p>
+            {% endif %}
         </div>
+
     </main>
-    {% endblock %}   
+    {% endblock %}
 </body>

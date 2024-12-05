@@ -1,13 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
 # Create your views here.
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from users.forms import ProjectForm, JoinProjectForm
 from django.http import HttpResponseRedirect, JsonResponse
-from .models import Project
+from .models import Project, Profile, ProjectFiles, Comment 
 from django.urls import reverse
-from .models import ProjectFiles, Comment 
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, get_object_or_404
 from mysite.forms import UploadFileForm, CreateTaskForm
@@ -27,6 +26,14 @@ def public_projects(request):
 
 @login_required
 def create_project(request):
+    # Check if the user is a PMA admin
+    try:
+        profile = Profile.objects.get(user=request.user)
+        if profile.pmaStatus:
+            return HttpResponseForbidden("PMA admins are not allowed to create projects.")
+    except Profile.DoesNotExist:
+        return HttpResponseForbidden("You do not have permission to perform this action.")
+
     if request.method == "POST":
         form = ProjectForm(request.POST)
         if form.is_valid():
@@ -41,44 +48,62 @@ def create_project(request):
 
 @login_required
 def join_project_list(request):
-    # Show list of all projects available to join
+    try:
+        profile = Profile.objects.get(user=request.user)
+        if profile.pmaStatus:
+            return HttpResponseForbidden("PMA admins are not allowed to join projects.")
+    except Profile.DoesNotExist:
+        return HttpResponseForbidden("You do not have permission to perform this action.")
+
     projects = Project.objects.exclude(
         Q(user=request.user) | Q(collaborators=request.user)
     ).distinct()
     return render(request, 'join_project_list.html', {'projects': projects})
 
+
 @login_required
 def join_project(request, project_id=None):
+    try:
+        profile = Profile.objects.get(user=request.user)
+        if profile.pmaStatus:
+            return HttpResponseForbidden("PMA admins are not allowed to join projects.")
+    except Profile.DoesNotExist:
+        return HttpResponseForbidden("You do not have permission to perform this action.")
+
     if project_id:
         project = get_object_or_404(Project, id=project_id)
-        
-        # Check if user is already part of the project
+
         if request.user in project.collaborators.all() or project.user == request.user:
             messages.warning(request, 'You are already part of this project.')
             return redirect('common_default')
-        
-        # Only allow joining public projects through this view
+
         if project.is_private:
             return redirect('join_private_project', project_id=project_id)
-        
-        # Add user to public project
+
         project.collaborators.add(request.user)
         project.save()
         messages.success(request, f'Successfully joined {project.name}!')
         return redirect('common_default')
-    
-    # Display list of available projects
+
     projects = Project.objects.exclude(
         Q(user=request.user) | Q(collaborators=request.user)
     ).distinct()
-    
+
     return render(request, 'joinproject.html', {'projects': projects})
+
 
 @login_required
 def join_private_project(request, project_id):
+    try:
+        profile = Profile.objects.get(user=request.user)
+        if profile.pmaStatus:
+            return HttpResponseForbidden("PMA admins are not allowed to join private projects.")
+    except Profile.DoesNotExist:
+        return HttpResponseForbidden("You do not have permission to perform this action.")
+
     project = get_object_or_404(Project, id=project_id)
     error = None
-    
+
     if request.method == "POST":
         password = request.POST.get('password')
         if password == project.password:
@@ -93,6 +118,7 @@ def join_private_project(request, project_id):
         'project': project,
         'error': error
     })
+
 
 def audio_playback(request, file_id):
     print(f"Accessing audio_playback with file_id: {file_id}")  
