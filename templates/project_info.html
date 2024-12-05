@@ -116,7 +116,15 @@
                         <!-- Resolve button on the right -->
                         <form method="post" action="{% url 'resolve_discussion_comment' comment.id %}">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-sm">Resolve</button>
+                            <button
+                                type="submit"
+                                class="btn btn-sm btn-outline-danger"
+                                {% if not request.user.is_authenticated or request.user != comment.user and request.user != project.user %}
+                                disabled
+                                {% endif %}
+                            >
+                                Resolve
+                            </button>
                         </form>
                     </div>
                     {% empty %}

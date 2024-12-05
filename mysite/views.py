@@ -253,13 +253,16 @@ def add_project_comment(request, project_id):
     else:
         return HttpResponse("Invalid request method", status=405)
 
+from django.http import HttpResponseForbidden
+
 @login_required
 def resolve_discussion_comment(request, comment_id):
     comment = get_object_or_404(DiscussionComment, id=comment_id)
-    # Optional: Only allow the comment creator or project owner to delete
-    if comment.user != request.user and comment.project.user != request.user:
-        return HttpResponseForbidden("You are not allowed to resolve this comment.")
+    project = comment.project
     
-    project_id = comment.project.id
+    if request.user != comment.user and request.user != project.user:
+        return HttpResponseForbidden("You are not allowed to resolve this comment.")
+
     comment.delete()
-    return redirect('project_info', project_id=project_id)
+    return redirect('project_info', project_id=project.id)
+
