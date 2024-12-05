@@ -336,7 +336,7 @@ def delete_file_from_manage(request, file_id):
     file = get_object_or_404(ProjectFiles, id=file_id)
     project = file.project
 
-    if request.user == file.uploaded_by:
+    if request.user == file.uploaded_by or request.user.profile.pmaStatus:
         file.delete()
         messages.success(request, "File deleted successfully.")
     else:
@@ -347,8 +347,15 @@ def delete_file_from_manage(request, file_id):
 @login_required
 def delete_file_from_admin(request, file_id):
     file = get_object_or_404(ProjectFiles, id=file_id)
-    file.delete()
-    return redirect('manage_files_admin') 
+
+    if request.user == file.uploaded_by or request.user.profile.pmaStatus:
+        file.delete()
+        messages.success(request, "File deleted successfully.")
+    else:
+        messages.error(request, "You do not have permission to delete this file.")
+
+    return redirect('manage_files_admin')
+
 
 class ManageProjectsAdminView(LoginRequiredMixin, View):
     template_name = 'manage_projects_admin.html'
