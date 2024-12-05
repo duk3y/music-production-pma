@@ -21,7 +21,6 @@ def CalendarView(request):
     
     return render(request, 'calendar.html')
 
-
 @login_required()
 def upload_file(request, project_id):
     project = Project.objects.get(id=project_id)
@@ -49,7 +48,8 @@ def create_task(request, project_id):
             task.project = project
             task.save()
             form.save_m2m()
-            return HttpResponseRedirect(reverse('project_task_view', args=[project_id]))
+            print(f"HEREHHHHHEREE:{request.POST.get('next')}")
+            return redirect(request.POST.get('next', reverse('project_task_view', args=[project_id])))
     else:
         form = CreateTaskForm()
     return render(request, 'create_task.html', {'form': form})
@@ -60,6 +60,14 @@ def delete_file(request, file_id):
     
     # Redirect to the project information page after deletion
     return redirect('project_info', project_id=file.project.id)
+
+def delete_task_project_overview(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    task.delete()
+    
+    # Redirect to the project information page after deletion
+    return redirect('project_info', project_id =task.project.id)
+
 
 def manage_files(request, project_id):
     project = get_object_or_404(Project, id=project_id)
@@ -300,6 +308,7 @@ def confirm_delete_project(request, project_id):
         'project': project
     })
 
+
 @login_required
 def delete_project(request, project_id):
     project = get_object_or_404(Project, id=project_id)
@@ -320,6 +329,27 @@ def delete_project(request, project_id):
     # Fallback redirect in case the request is not POST
     return redirect('common_default')
 
+
+
+@login_required
+def confirm_leave_project(request, project_id):
+    user = request.user
+    project = get_object_or_404(Project, id=project_id, user=user)
+
+    return render(request, 'confirm_leave_project.html', {
+        'project': project,
+    })
+    
+@login_required
+def leave_project(request, project_id):
+    project = get_object_or_404(Project, id=project_id, user=request.user)
+
+    if request.method == 'POST':
+        project.collaborators.remove(request.user)
+        messages.success(request, f'Left Project: "{project.name}" successfully.')
+        return redirect('common_default')
+
+    return redirect('confirm_delete_project', project_id=project_id)
 
 
 @login_required

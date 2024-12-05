@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from . import views
-from .views import CustomLoginView, user_tasks, project_files_view, updateTaskStatus, delete_task, TaskInfoView, CalendarView, CommonDefaultView, ManageFilesAdminView, ManageProjectsAdminView, AuthenticationView, upload_file, login_redirect, ProjectTaskView, create_task
+from .views import CustomLoginView, user_tasks, project_files_view, delete_task_project_overview, updateTaskStatus, delete_task, TaskInfoView, CalendarView, CommonDefaultView, ManageFilesAdminView, ManageProjectsAdminView, AuthenticationView, upload_file, login_redirect, ProjectTaskView, create_task
 
 
 urlpatterns = [
@@ -28,6 +28,7 @@ urlpatterns = [
     path('projects/<int:project_id>/upload/', upload_file, name='file_upload'),
     path('projects/<int:project_id>/tasks/<int:task_id>/delete/', delete_task, name="task_delete"),
     path('file/delete/<int:file_id>/', views.delete_file, name='delete_file'),
+    path('task/delete/<int:task_id>/', delete_task_project_overview, name="delete_task_project_overview"),
     path('projects/<int:project_id>/edit/', views.edit_project, name='edit_project'),
     path('projects/<int:project_id>/manage_files/', views.manage_files, name='manage_files'),
     path("admin/", admin.site.urls),
@@ -49,7 +50,9 @@ urlpatterns = [
     path('projects/comment/<int:comment_id>/resolve/', views.resolve_discussion_comment, name='resolve_discussion_comment'),
     path('projects/<int:project_id>/search/', views.search_files, name='search_files'),
     path('projects/<int:project_id>/delete/', views.delete_project, name='delete_project'),
+    path('projects/<int:project_id>/leave/', views.leave_project, name='leave_project'),
     path('projects/<int:project_id>/delete/confirm/', views.confirm_delete_project, name='confirm_delete_project'),
+    path('projects/<int:project_id>/leave/confirm/', views.confirm_leave_project, name='confirm_leave_project'),
     path('file/<int:file_id>/manage-delete/', views.delete_file_from_manage, name='delete_file_from_manage'),
     path('pmaadmin/file/delete/<int:file_id>/', views.delete_file_from_admin, name='delete_file_from_admin'),
      path('manage-projects-admin/', ManageProjectsAdminView.as_view(), name='manage_projects_admin'),

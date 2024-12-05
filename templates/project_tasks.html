@@ -3,7 +3,6 @@
 {% block content %}
 {% csrf_token %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
-
     <style>
         body {
             background-color: #1c1c1c;
@@ -49,6 +48,9 @@
             align-items: center;
         }
         .button-container{
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
             position: absolute;
             right: 0;
         }
@@ -88,6 +90,14 @@
             </div> 
             <h1 class="text-center">{{project.name}}: Tasks</h1>
             <div class="button-container" style="text-align: right">
+                {% comment %} <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-secondary active">
+                        <input type="radio" name="options" autocomplete="off" checked> Your Tasks
+                    </label>
+                    <label class="btn btn-secondary">
+                        <input type="radio" name="options" autocomplete="off"> All Tasks
+                    </label>
+                </div> {% endcomment %}
                 <form action="{% url 'task_upload' project.id %}" method="post">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary" style=""> Add Task </button>
@@ -97,19 +107,19 @@
 
         <div class="task-container">
             <div class="sub-task-container" data-status="to do">
-                <h1 class = 'd-flex justify-content-center fs-5' style ="color: #1c1c1c; margin-top: 9%" > To Do</h1>
+                <h1 class = 'd-flex justify-content-center' style ="color: #1c1c1c; margin-top: 9%; font-size:1.25rem;" > To Do</h1>
                 {% include 'tasks.html' with tasks=to_do_tasks %}
             </div>
             <div class="sub-task-container" data-status="in progress">
-                <h1 class = 'd-flex justify-content-center fs-5' style = "color: #1c1c1c; margin-top: 9%">Ongoing</h1>
+                <h1 class = 'd-flex justify-content-center' style = "color: #1c1c1c; margin-top: 9%; font-size:1.25rem;">Ongoing</h1>
                 {% include 'tasks.html' with tasks=in_progress_tasks %}
             </div>
             <div class="sub-task-container" data-status="waiting approval">
-                <h1 class = 'd-flex justify-content-center fs-5' style = "color: #1c1c1c; margin-top: 9%"> Review </h1>
+                <h1 class = 'd-flex justify-content-center' style = "color: #1c1c1c; margin-top: 9%; font-size:1.25rem;"> Review </h1>
                 {% include 'tasks.html' with tasks=waiting_approval_tasks %}
             </div>
             <div class="sub-task-container" data-status="done">
-                <h1 class = 'd-flex justify-content-center fs-5' style = "color: #1c1c1c; margin-top: 9%">Done</h1>
+                <h1 class = 'd-flex justify-content-center' style = "color: #1c1c1c; margin-top: 9%; font-size:1.25rem;">Done</h1>
                 {% include 'tasks.html' with tasks=completed_tasks %}
             </div>
         </div>

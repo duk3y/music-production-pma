@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container text-center" style="padding-top: 50px;">
+    <h2>Are you sure you want to leave this project?</h2>
+    <p><strong>{{ project.name }}</strong></p>
+    <form method="POST" action="{% url 'leave_project' project.id%}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Leave</button>
+        <a href="{% url 'common_default' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

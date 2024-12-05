@@ -77,6 +77,9 @@
         padding: 20px 50px;
         font-size: 1.3rem;
     }
+    a {
+        color: inherit;
+    }
 </style>
 
 <body>
@@ -94,7 +97,8 @@
                     <tr>
                         <th scope="col">Project Name</th>
                         <th scope="col">Last Modified</th>
-                        <th scope="col" style="text-align: right;">Actions</th>
+                        <th scope="col">Leave Project</th>
+                        <th scope="col">Delete Project</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -112,12 +116,16 @@
                                     </a>
                                 </td>
                                 <td>{{ project.last_modified }}</td>
-                                <td style="text-align: right;">
-                                    {% if project.user == request.user %}
-                                    <a href="{% url 'confirm_delete_project' project.id %}">
-                                        <img src="{% static 'trash_can.png' %}" alt="Delete"
-                                            style="height: 20px; cursor: pointer;">
+                                <td>
+                                    <a href="{% url 'confirm_leave_project' project.id %}">
+                                        <i class="fas fa-sign-out-alt"></i>
                                     </a>
+                                </td>
+                                <td>
+                                    {% if project.user == request.user %}
+                                        <a href="{% url 'confirm_delete_project' project.id %}">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </a>
                                     {% endif %}
                                 </td>
                             </tr>

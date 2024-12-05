@@ -55,12 +55,21 @@ https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js
             justify-content:center;
             align-items: center;
         }
+        .button-container-l{
+            position: absolute;
+            left: 0;
+        }
 
     </style>
 </head>
 <body>
     <main class="full-container">
         <div class="container-header">
+            <div class="button-container-l" style="text-align: left">
+                <a href="{% url 'common_default' %}" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left"></i> My Projects
+                </a>
+            </div>
             <h1 class="text-center">Calendar</h1>
         </div>
         <div id='calendar' class="calendar"></div>

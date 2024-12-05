@@ -41,6 +41,8 @@ def create_project(request):
             project = form.save(commit=False)
             project.user = request.user
             project.save()
+            form.save_m2m()
+            project.collaborators.add(request.user)
             return HttpResponseRedirect(reverse('common_default'))
     else:
         form = ProjectForm()
