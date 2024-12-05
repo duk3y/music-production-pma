@@ -48,6 +48,10 @@ urlpatterns = [
     path('public-projects/', views.public_projects, name='public_projects'),
     path('projects/<int:project_id>/add_comment/', views.add_project_comment, name='add_project_comment'),
     path('projects/comment/<int:comment_id>/resolve/', views.resolve_discussion_comment, name='resolve_discussion_comment'),
+    path('projects/<int:project_id>/search/', views.search_files, name='search_files'),
+    path('projects/<int:project_id>/delete/', views.delete_project, name='delete_project'),
+    path('projects/<int:project_id>/delete/confirm/', views.confirm_delete_project, name='confirm_delete_project'),
+    path('file/<int:file_id>/manage-delete/', views.delete_file_from_manage, name='delete_file_from_manage'),
 
 
 ]

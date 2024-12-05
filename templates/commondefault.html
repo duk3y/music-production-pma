@@ -79,6 +79,7 @@
                     <tr>
                         <th scope="col">Project Name</th>
                         <th scope="col">Last Modified</th>
+                        <th scope="col" style="text-align: right;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -89,11 +90,18 @@
                                     {{ project.name }} </a>
                                 </td>
                                 <td>{{ project.last_modified }}</td>
+                                <td style="text-align: right;">
+                                    {% if project.user == request.user %}
+                                        <a href="{% url 'confirm_delete_project' project.id %}">
+                                            <img src="{% static 'trash_can.png' %}" alt="Delete" style="height: 20px; cursor: pointer;">
+                                        </a>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="2" class="text-center">You currently have no projects</td>
+                            <td colspan="3" class="text-center">You currently have no projects</td>
                         </tr>
                     {% endif %}
                 </tbody>
