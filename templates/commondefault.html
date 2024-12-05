@@ -98,11 +98,18 @@
                     </tr>
                 </thead>
                 <tbody>
+                    {% if user.profile.pmaStatus %}
+                    <tr>
+                        <td colspan="3" class="text-center">PMA admins cannot create or join projects.</td>
+                    </tr>
+                    {% else %}
                     {% if projects %}
                     {% for project in projects %}
                     <tr>
-                        <td> <a href="{% url 'project_info' project.id %}">
-                                {{ project.name }} </a>
+                        <td>
+                            <a href="{% url 'project_info' project.id %}">
+                                {{ project.name }}
+                            </a>
                         </td>
                         <td>{{ project.last_modified }}</td>
                         <td style="text-align: right;">
@@ -120,9 +127,11 @@
                         <td colspan="3" class="text-center">You currently have no projects</td>
                     </tr>
                     {% endif %}
+                    {% endif %}
                 </tbody>
             </table>
         </div>
+
         <div class="button-container">
             {% if not user.profile.pmaStatus %}
             <form action="{% url 'create_project' %}" method="post">
@@ -134,7 +143,7 @@
                 <button type="submit" class="btn btn-light"> Join a Project </button>
             </form>
             {% else %}
-            <p class="text-center">PMA admins cannot create or join projects.</p>
+            <a href="{% url 'manage_projects_admin' %}" class="btn btn-secondary">Manage Projects</a>
             {% endif %}
         </div>
 

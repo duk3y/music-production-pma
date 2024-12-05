@@ -92,6 +92,7 @@
           {% with user.profile as profile %}
               {% if profile.pmaStatus %}
                   <!-- PMA admin-specific buttons -->
+                  <a href="{% url 'public_projects' %}" class="btn btn-primary mt-3">View Public Projects</a>
                   <a href="{% url 'manage_files_admin' %}" class="btn btn-secondary mt-3">Manage Files</a>
                   <a href="{% url 'manage_projects_admin' %}" class="btn btn-secondary mt-3">Manage Projects</a>
               {% else %}
