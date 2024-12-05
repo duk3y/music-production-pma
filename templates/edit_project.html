@@ -7,7 +7,7 @@
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center">Edit Project</h1>
-    <form method="post" action="">
+    <form method="post" action="" onsubmit="return confirmEdit();">
         {% csrf_token %}
         <div class="mb-3">
             <label for="name" class="form-label">Project Name</label>
@@ -22,5 +22,24 @@
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
     </form>
+
+    {% if user == project.user or user.profile.pmaStatus %}
+    <div class="mt-4 text-center">
+        <form method="post" action="{% url 'delete_project' project.id %}" onsubmit="return confirmDelete();">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete Project</button>
+        </form>
+    </div>
+    {% endif %}
 </div>
+
+<script>
+    function confirmEdit() {
+        return confirm("Are you sure you want to save changes to the project?");
+    }
+
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this project? This action cannot be undone.");
+    }
+</script>
 {% endblock %}

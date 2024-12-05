@@ -322,16 +322,22 @@ def confirm_delete_project(request, project_id):
 def delete_project(request, project_id):
     project = get_object_or_404(Project, id=project_id)
 
-    # Ensure only PMA admins or project owners can delete
-    if not (request.user.profile.pmaStatus or project.user == request.user):
+    if not (request.user.profile.pmaStatus or request.user == project.user):
         return HttpResponseForbidden("You do not have permission to delete this project.")
 
     if request.method == 'POST':
         project.delete()
         messages.success(request, f'Project "{project.name}" was deleted successfully.')
-        return redirect('manage_projects_admin')  # Redirect to manage projects for admins
 
-    return redirect('manage_projects_admin')  # Fallback redirect
+        # Redirect based on user role
+        if request.user.profile.pmaStatus:
+            return redirect('manage_projects_admin')
+        else:
+            return redirect('common_default')
+
+    # Fallback redirect in case the request is not POST
+    return redirect('common_default')
+
 
 
 @login_required
