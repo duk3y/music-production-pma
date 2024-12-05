@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from . import views
-from .views import CustomLoginView, user_tasks, project_files_view, updateTaskStatus, delete_task, TaskInfoView, CalendarView, CommonDefaultView, PMAAdminDefaultView, AuthenticationView, upload_file, login_redirect, ProjectTaskView, create_task
+from .views import CustomLoginView, user_tasks, project_files_view, updateTaskStatus, delete_task, TaskInfoView, CalendarView, CommonDefaultView, ManageFilesAdminView, ManageProjectsAdminView, AuthenticationView, upload_file, login_redirect, ProjectTaskView, create_task
 
 
 urlpatterns = [
@@ -39,7 +39,7 @@ urlpatterns = [
     path('calendar/', CalendarView, name="calendar_view"),
     path('api/user_tasks/', user_tasks, name="user_tasks_calendar"),
     path('api/status-update/', updateTaskStatus, name='update_task_status'),
-    path('pmaadmin/', PMAAdminDefaultView.as_view(), name='pma_admin_default'),
+    path('manage-files-admin/', ManageFilesAdminView.as_view(), name='manage_files_admin'),
     path("login-post", AuthenticationView, name="authentication_view"),
     path('projects/<int:project_id>/manage-files', project_files_view, name="manage_project_files" ),
     path('', include('users.urls')),  
@@ -51,6 +51,9 @@ urlpatterns = [
     path('projects/<int:project_id>/delete/', views.delete_project, name='delete_project'),
     path('projects/<int:project_id>/delete/confirm/', views.confirm_delete_project, name='confirm_delete_project'),
     path('file/<int:file_id>/manage-delete/', views.delete_file_from_manage, name='delete_file_from_manage'),
+    path('pmaadmin/file/delete/<int:file_id>/', views.delete_file_from_admin, name='delete_file_from_admin'),
+     path('manage-projects-admin/', ManageProjectsAdminView.as_view(), name='manage_projects_admin'),
+
 
 
 ]

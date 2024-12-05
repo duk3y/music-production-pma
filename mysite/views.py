@@ -97,12 +97,33 @@ class CommonDefaultView(LoginRequiredMixin, View):
         print("Rendering commondefault.html with", len(projects), "projects")
         return render(request, self.template_name, context)
 
-class PMAAdminDefaultView(View):
-    template_name = 'pmaadmindefault.html'
+class ManageFilesAdminView(View):
+    template_name = 'manage_files_admin.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        if not request.user.profile.pmaStatus:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
-        return render(request, self.template_name)
+        search_query = request.GET.get('search', '')
+        files = ProjectFiles.objects.select_related('project', 'uploaded_by')
 
+        if search_query:
+            files = files.filter(
+                Q(project__name__icontains=search_query) |
+                Q(title__icontains=search_query) |
+                Q(uploaded_by__username__icontains=search_query)
+            )
+
+        context = {
+            'files': files,
+        }
+        return render(request, self.template_name, context)
 
 @login_required()
 def AuthenticationView(request):
@@ -112,7 +133,7 @@ def AuthenticationView(request):
     # print(Profile.pmaStatus)
     if profile.pmaStatus:
         print("yes")
-        return redirect(reverse("pma_admin_default"))
+        return redirect(reverse("manage_files_admin"))
     else:
         print("no")
         return redirect(reverse("common_default"))
@@ -167,7 +188,7 @@ def login_redirect(request):
     profile = Profile.objects.get(user=user)
 
     if profile.pmaStatus:
-        return redirect('pma_admin_default')
+        return redirect('manage_files_admin')
     else:
         return redirect('common_default')
     
@@ -281,24 +302,75 @@ def confirm_delete_project(request, project_id):
 
 @login_required
 def delete_project(request, project_id):
-    project = get_object_or_404(Project, id=project_id, user=request.user)
+    project = get_object_or_404(Project, id=project_id)
+
+    if not (request.user.profile.pmaStatus or request.user == project.user):
+        return HttpResponseForbidden("You do not have permission to delete this project.")
 
     if request.method == 'POST':
         project.delete()
         messages.success(request, f'Project "{project.name}" was deleted successfully.')
-        return redirect('common_default')
 
-    return redirect('confirm_delete_project', project_id=project_id)
+        # Redirect based on user role
+        if request.user.profile.pmaStatus:
+            return redirect('manage_projects_admin')
+        else:
+            return redirect('common_default')
+
+    # Fallback redirect in case the request is not POST
+    return redirect('common_default')
+
+
 
 @login_required
 def delete_file_from_manage(request, file_id):
     file = get_object_or_404(ProjectFiles, id=file_id)
     project = file.project
 
-    if request.user == project.user or request.user == file.uploaded_by:
+    if request.user == file.uploaded_by or request.user.profile.pmaStatus:
         file.delete()
         messages.success(request, "File deleted successfully.")
     else:
         messages.error(request, "You do not have permission to delete this file.")
 
     return redirect('manage_project_files', project_id=project.id)
+
+@login_required
+def delete_file_from_admin(request, file_id):
+    file = get_object_or_404(ProjectFiles, id=file_id)
+
+    if request.user == file.uploaded_by or request.user.profile.pmaStatus:
+        file.delete()
+        messages.success(request, "File deleted successfully.")
+    else:
+        messages.error(request, "You do not have permission to delete this file.")
+
+    return redirect('manage_files_admin')
+
+
+class ManageProjectsAdminView(View):
+    template_name = 'manage_projects_admin.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        if not request.user.profile.pmaStatus:
+            return HttpResponseForbidden("You do not have permission to access this page.")
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request):
+        search_query = request.GET.get('search', '')
+        projects = Project.objects.all()
+
+        if search_query:
+            projects = projects.filter(
+                Q(name__icontains=search_query) |
+                Q(user__username__icontains=search_query)
+            )
+
+        context = {
+            'projects': projects,
+        }
+        return render(request, self.template_name, context)

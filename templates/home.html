@@ -88,9 +88,22 @@
       <h2>About Us</h2>
       <p>Welcome to Music Manager! Collaborate, create, and capture your sound with our platform. Our mission is to provide musicians with the tools they need to manage their music projects efficiently.</p>
       <div class="mt-4 text-center buttons-container">
-        <a href="{% url 'public_projects' %}" class="btn btn-primary mt-3">View Public Projects</a>
         {% if user.is_authenticated %}
-          <a href="{% url 'common_default' %}" class="btn btn-secondary mt-3">Your Projects</a>
+          {% with user.profile as profile %}
+              {% if profile.pmaStatus %}
+                  <!-- PMA admin-specific buttons -->
+                  <a href="{% url 'public_projects' %}" class="btn btn-primary mt-3">View Public Projects</a>
+                  <a href="{% url 'manage_files_admin' %}" class="btn btn-secondary mt-3">Manage Files</a>
+                  <a href="{% url 'manage_projects_admin' %}" class="btn btn-secondary mt-3">Manage Projects</a>
+              {% else %}
+                  <!-- Regular user buttons -->
+                  <a href="{% url 'public_projects' %}" class="btn btn-primary mt-3">View Public Projects</a>
+                  <a href="{% url 'common_default' %}" class="btn btn-secondary mt-3">Your Projects</a>
+              {% endif %}
+          {% endwith %}
+        {% else %}
+            <!-- For unauthenticated users -->
+            <a href="{% url 'public_projects' %}" class="btn btn-primary mt-3">View Public Projects</a>
         {% endif %}
       </div>
     </div>
