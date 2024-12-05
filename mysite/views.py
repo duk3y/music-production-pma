@@ -157,24 +157,6 @@ def project_files_view(request, project_id):
         'audio_files' : audio_files,
     })
 
-@login_required()
-def ProjectDetailView(request, project_id):
-    project = Project.objects.get(id=project_id)
-    files = ProjectFiles.objects.filter(project=project)
-
-    # video_files = files.filter(file__iendswith=('.mp4', '.mov', '.avi'))
-    video_files = (files.filter(file__icontains='.mp4') | files.filter(file__icontains='.mov') | files.filter(file__icontains='.avi')).distinct()
-    image_files = (files.filter(file__icontains='.jpg') | files.filter(file__icontains='.jpeg') | files.filter(file__icontains='.png') | files.filter(file__icontains='.gif')).distinct()
-    text_files = (files.filter(file__icontains='.txt') | files.filter(file__icontains='.pdf') | files.filter(file__icontains='.docx')).distinct()
-    audio_files = (files.filter(file__icontains='.mp3') | files.filter(file__icontains='.wav') | files.filter(file__icontains='.aac')).distinct()
-
-    return render(request, 'project_info.html', {
-        'project': project,
-        'video_files': video_files,
-        'image_files': image_files,
-        'text_files': text_files,
-        'audio_files' : audio_files,
-    })
 
 @login_required()
 def ProjectTaskView(request, project_id):
