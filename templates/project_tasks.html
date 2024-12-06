@@ -123,7 +123,12 @@
                 {% include 'tasks.html' with tasks=completed_tasks %}
             </div>
         </div>
-
+<!--    for help with sortable
+        https://www.htmlelements.com/docs/sortable-api/ 
+        https://htmlstream.com/front-dashboard/documentation/sortablejs.html
+        https://www.w3schools.com/jsreF/met_document_queryselector.asp
+        https://stackoverflow.com/questions/76984684/drag-and-drop-issue-in-javascript-sortable-list -->
+        
         <script>
             document.addEventListener('DOMContentLoaded', function(){
                 const taskGroups = document.querySelectorAll('.sub-task-container');
