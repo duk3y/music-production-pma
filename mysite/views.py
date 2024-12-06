@@ -48,7 +48,6 @@ def create_task(request, project_id):
             task.project = project
             task.save()
             form.save_m2m()
-            print(f"HEREHHHHHEREE:{request.POST.get('next')}")
             return redirect(request.POST.get('next', reverse('project_task_view', args=[project_id])))
     else:
         form = CreateTaskForm()
@@ -333,8 +332,7 @@ def delete_project(request, project_id):
 
 @login_required
 def confirm_leave_project(request, project_id):
-    user = request.user
-    project = get_object_or_404(Project, id=project_id, user=user)
+    project = get_object_or_404(Project, id=project_id)
 
     return render(request, 'confirm_leave_project.html', {
         'project': project,
@@ -342,7 +340,7 @@ def confirm_leave_project(request, project_id):
     
 @login_required
 def leave_project(request, project_id):
-    project = get_object_or_404(Project, id=project_id, user=request.user)
+    project = get_object_or_404(Project, id=project_id)
 
     if request.method == 'POST':
         project.collaborators.remove(request.user)

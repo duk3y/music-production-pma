@@ -117,9 +117,11 @@
                                 </td>
                                 <td>{{ project.last_modified }}</td>
                                 <td>
-                                    <a href="{% url 'confirm_leave_project' project.id %}">
-                                        <i class="fas fa-sign-out-alt"></i>
-                                    </a>
+                                    {% if project.user != request.user%}
+                                        <a href="{% url 'confirm_leave_project' project.id %}">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                        </a>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     {% if project.user == request.user %}
